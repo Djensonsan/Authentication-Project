@@ -1,18 +1,20 @@
 package com.pluralsight.calcengine;
 
 import java.io.*;
+import java.util.*;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-// Queue file
-// Log file
+public class PrintServant extends UnicastRemoteObject implements PrintService {
+    ArrayList<String> queue;
+    int jobNumber = 0;
 
-public class PrintServant extends UnicastRemoteObject implements PrintService{
     public PrintServant() throws RemoteException {
         super();
+        queue = new ArrayList<String>(); //Creating arraylist , used arraylist instead of queue to keep it simple.
     }
 
     @Override
@@ -21,7 +23,8 @@ public class PrintServant extends UnicastRemoteObject implements PrintService{
     }
 
     @Override
-    public void print(String filename, String printer) throws IOException {
+    public void print(String filename, String printer) throws IOException, RemoteException {
+        // Logging the action to a file
         OutputStream log = new FileOutputStream("log.txt");
         String dummy1 = filename.concat(" ");
         String dummy2 = printer.concat("\n");
@@ -29,12 +32,15 @@ public class PrintServant extends UnicastRemoteObject implements PrintService{
         byte[] outputBytes =  output.getBytes();
         log.write(outputBytes);
         log.close();
+
+        // Adding the print request to the queue.
+        queue.add(filename);
     }
 
-//    @Override
-//    public String queue() {
-//        return null;
-//    }
+    @Override
+    public ArrayList <String> queue() throws RemoteException {
+        return queue;
+    }
 //
 //    @Override
 //    public void topQueue(int job) {
