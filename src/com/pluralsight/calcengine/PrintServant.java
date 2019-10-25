@@ -13,11 +13,37 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     ArrayList<String> queue; // Print job Queue
     boolean printServerStatus = false; // False = Off, True = On
+    class Configuration{
+        private String parameter;
+        private String value;
+
+        public Configuration(String parameter, String value) {
+            this.parameter = parameter;
+            this.value = value;
+        }
+
+        public String getParameter() {
+            return parameter;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    } //defines what is a Configuration (couples of parameters and values)
+    ArrayList<Configuration> configurations =  new ArrayList<>(); //stores the Configurations
+
 
 
     public PrintServant() throws RemoteException {
         super();
         queue = new ArrayList<String>(); //Creating arraylist , used arraylist instead of queue/linkedlist to keep it simple.
+        configurations.add(new Configuration("colours", "black and white")); //Setting three configurations
+        configurations.add(new Configuration("orientation", "portrait"));
+        configurations.add(new Configuration("size", "A4"));
     }
 
     @Override
@@ -91,12 +117,21 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     @Override
     public String readConfig(String parameter) {
-        return null;
+        for (int i=0; i<configurations.size(); i++) {
+            if (configurations.get(i).getParameter().equals(parameter)){ //finds where is the parameter from the input
+                return configurations.get(i).getValue();
+            }
+        }
+        return "No parameter with this name";
     }
 
     @Override
     public void setConfig(String parameter, String value) {
-
+        for (int i=0; i<configurations.size(); i=i+1) {
+            if (configurations.get(i).getParameter().equals(parameter)){ //finds where is the parameter from the input
+                configurations.get(i).setValue(value);
+            }
+        }
     }
 
 

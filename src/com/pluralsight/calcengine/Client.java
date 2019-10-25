@@ -39,6 +39,12 @@ public class Client
         System.out.println(service.restart());
         // Server status
         System.out.println(service.status());
+
+        //server configuration
+        System.out.println(service.readConfig("colours"));
+        service.setConfig("orientation","landscape");
+        System.out.println(service.readConfig("orientation"));
+
     }
 
     public static void printQueue(ArrayList <String> queue) {
