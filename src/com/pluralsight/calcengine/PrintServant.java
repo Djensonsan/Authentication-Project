@@ -98,6 +98,4 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     public void setConfig(String parameter, String value) {
 
     }
-
-
 }

@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="com.bluecatcode.junit:junit-4.10-extended:1.0.4" level="project" />
+    <orderEntry type="library" name="mysql:mysql-connector-java:8.0.17" level="project" />
   </component>
 </module>
