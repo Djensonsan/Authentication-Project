@@ -27,7 +27,7 @@ public class UserDatabase {
         Boolean dropSuccess = false;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD", admin, adminPassword);
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
             dropSuccess = stmt.execute("DROP USER 'Printer'@'localhost';");
             con.close();
@@ -41,7 +41,7 @@ public class UserDatabase {
         int rowsAffected = 0;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD", admin, adminPassword);
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
             rowsAffected += stmt.executeUpdate("CREATE USER 'Printer'@'localhost' IDENTIFIED BY 'password';");
             con.close();
@@ -55,7 +55,7 @@ public class UserDatabase {
         int rowsAffected = 0;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD", admin, adminPassword);
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
             stmt = con.createStatement();
             rowsAffected += stmt.executeUpdate("GRANT SELECT ON *.* TO 'Printer'@'localhost';");
@@ -74,7 +74,7 @@ public class UserDatabase {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/PWD", admin, adminPassword);
+                    "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
             rowsAffected = stmt.executeUpdate("INSERT INTO Users (Username, Password) VALUES ('"+username+"','"+hashedPassword+"')");
             con.close();
@@ -89,7 +89,7 @@ public class UserDatabase {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/PWD", admin, adminPassword);
+                    "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
             rowsAffected = stmt.executeUpdate("TRUNCATE TABLE "+tablename);
             con.close();

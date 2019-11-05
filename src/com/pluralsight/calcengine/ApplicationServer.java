@@ -21,7 +21,7 @@ public class ApplicationServer {
     {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD", "Printer", "password");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
             String sql = "TRUNCATE Users";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.execute();

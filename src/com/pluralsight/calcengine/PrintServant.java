@@ -17,12 +17,36 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     ArrayList<ClientObject> activeClients; // Print job Queue
     ArrayList<String> queue; // Print job Queue
     boolean printServerStatus = false; // False = Off, True = On
+    class Configuration{
+        private String parameter;
+        private String value;
 
+        public Configuration(String parameter, String value) {
+            this.parameter = parameter;
+            this.value = value;
+        }
+
+        public String getParameter() {
+            return parameter;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    } //defines what is a Configuration (couples of parameters and values)
+    ArrayList<Configuration> configurations =  new ArrayList<>(); //stores the Configurations
 
     public PrintServant() throws RemoteException {
         super();
         queue = new ArrayList<String>(); //Creating arraylist, used arraylist instead of queue/linkedlist to keep it simple.
         activeClients = new ArrayList<ClientObject>(); //Arraylist with all active clients
+        configurations.add(new Configuration("colours", "black and white")); //Setting three configurations
+        configurations.add(new Configuration("orientation", "portrait"));
+        configurations.add(new Configuration("size", "A4"));
     }
 
     @Override
@@ -114,11 +138,27 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     @Override
     public String readConfig(String parameter, UUID SID) {
-        return null;
+        if (checkSession(SID)) {
+            for (int i = 0; i < configurations.size(); i++) {
+                if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
+                    return configurations.get(i).getValue();
+                }
+            }
+            return "No parameter with this name";
+        } else {
+            return "Session expired";
+        }
     }
 
     @Override
     public void setConfig(String parameter, String value, UUID SID) {
+        if (checkSession(SID)) {
+            for (int i = 0; i < configurations.size(); i = i + 1) {
+                if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
+                    configurations.get(i).setValue(value);
+                }
+            }
+        }
     }
 
     // When the Session time has expired, the clientObject will be deleted and the client needs to authenticate again.
@@ -155,7 +195,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         String hashedPassword = hasher.HashSHA1(username, password);
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD", "Printer", "password");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
             String sql = "SELECT UserID from USERS WHERE Username = ? and Password = ?;";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, username);
