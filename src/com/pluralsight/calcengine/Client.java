@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 
 
 public class Client
 {
-    public static void main(String[] args) throws IOException, NotBoundException {
+    public static void main(String[] args) throws IOException, NotBoundException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Username: ");
         String username = scanner.nextLine();
@@ -29,6 +31,8 @@ public class Client
         service.print("File.txt", "A1",SID);
         service.print("Words.txt", "A1",SID);
         service.print("Train.txt", "A1",SID);
+        TimeUnit.SECONDS.sleep(15);
+        service.print("Shouldnotaccept.txt", "A1",SID); //to test the timeout of the session
 
 //        // Print the Queue on the Client Side
 //        ArrayList<String> queue = service.queue(SID);

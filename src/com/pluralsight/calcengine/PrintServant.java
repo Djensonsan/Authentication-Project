@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Iterator;
 
 // Notes: Do you not communicate with the printserver if it's off?
 // Try catch statements?
@@ -162,18 +163,21 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     }
 
     // When the Session time has expired, the clientObject will be deleted and the client needs to authenticate again.
-    // Something broken here!!!!
+
     public boolean checkSession(UUID SID) {
-        boolean authenticated = false;
-        for (ClientObject client : activeClients) {
+        Iterator<ClientObject> iter = activeClients.iterator(); //the iter should handle the exceptions that can be caused by removing an item while iterating on the list
+        while (iter.hasNext()){
+            ClientObject client = iter.next();
             if (client.timeElapsed()) {
-                activeClients.remove(client);
+               iter.remove();
+                //System.out.println("client disconnected"); //Use to check if it is working
             } else if (client.getUuid().equals(SID)) {
-                authenticated = true;
+                return true;
             }
         }
-        return authenticated;
+        return false;
     }
+
 
     @Override
     public UUID initiateSession(String username, String password) throws RemoteException {
