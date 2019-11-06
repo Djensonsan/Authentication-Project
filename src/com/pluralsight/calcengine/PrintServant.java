@@ -6,8 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
@@ -18,7 +16,8 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     ArrayList<ClientObject> activeClients; // Print job Queue
     ArrayList<String> queue; // Print job Queue
     boolean printServerStatus = false; // False = Off, True = On
-    class Configuration{
+
+    class Configuration {
         private String parameter;
         private String value;
 
@@ -39,7 +38,8 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             this.value = value;
         }
     } //defines what is a Configuration (couples of parameters and values)
-    ArrayList<Configuration> configurations =  new ArrayList<>(); //stores the Configurations
+
+    ArrayList<Configuration> configurations = new ArrayList<>(); //stores the Configurations
 
     public PrintServant() throws RemoteException {
         super();
@@ -60,7 +60,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         if (checkSession(SID)) {
             // Logging the action to a file?
             queue.add(filename);
-            System.out.println("File: "+filename+" added to queue");
+            System.out.println("File: " + filename + " added to queue");
         }
     }
 
@@ -163,13 +163,12 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     }
 
     // When the Session time has expired, the clientObject will be deleted and the client needs to authenticate again.
-
     public boolean checkSession(UUID SID) {
         Iterator<ClientObject> iter = activeClients.iterator(); //the iter should handle the exceptions that can be caused by removing an item while iterating on the list
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             ClientObject client = iter.next();
             if (client.timeElapsed()) {
-               iter.remove();
+                iter.remove();
                 //System.out.println("client disconnected"); //Use to check if it is working
             } else if (client.getUuid().equals(SID)) {
                 return true;
@@ -191,12 +190,27 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return SID;
     }
 
-    // Problem what if multiple persons have same name+password?
+    // Problem what if multiple persons have same username?
     @Override
     public int getUserId(String username, String password) throws RemoteException {
         int userId = -1;
-        SHA1Hasher hasher = new SHA1Hasher();
-        String hashedPassword = hasher.HashSHA1(username, password);
+        String salt = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+            String sql = "SELECT Salt from USERS WHERE Username = ?;";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                salt = rs.getString("Salt");
+            }
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        SHA256Hasher hasher = new SHA256Hasher();
+        String hashedPassword = hasher.HashSHA256(salt, password);
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
@@ -213,5 +227,20 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             System.out.println(e);
         }
         return userId;
+    }
+
+    // Printer tries to delete the table.
+    // Will give an SQLSyntaxErrorException: DROP command denied to user ...
+    public void printerDeleteTable() throws RemoteException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+            String sql = "TRUNCATE Users";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.execute();
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

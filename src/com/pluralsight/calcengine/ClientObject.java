@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class ClientObject {
-    int timeoutSeconds = 10;
+    int timeoutSeconds = 1000;
     String username;
     UUID uuid;
     Instant start;

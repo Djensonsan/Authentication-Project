@@ -11,23 +11,7 @@ public class ApplicationServer {
 
     public static void main(String[] args) throws RemoteException, FileNotFoundException {
         // printerDeleteTable();
-        Registry registery = LocateRegistry.createRegistry(5099);
+        Registry registery = LocateRegistry.createRegistry(6099);
         registery.rebind("printer", new PrintServant());
-    }
-
-    // Printer tries to delete the table.
-    // Will give an SQLSyntaxErrorException: DROP command denied to user ...
-    private static void printerDeleteTable()
-    {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-            String sql = "TRUNCATE Users";
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.execute();
-            con.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 }

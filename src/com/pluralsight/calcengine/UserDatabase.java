@@ -7,7 +7,7 @@ public class UserDatabase {
     // Can be root for example.
     // Used access control of mySQL, Printer user only has SELECT privilege.
     static String admin = "root";
-    static String adminPassword = "";
+    static String adminPassword = "10jl0298";
 
     public static void main(String args[]) {
         Boolean dropSuccess = dropPrinterAccount();
@@ -69,14 +69,16 @@ public class UserDatabase {
     // Returns the amount of rows affected by the query
     private static int AddUser(String username, String password) {
         int rowsAffected = 0;
-        SHA1Hasher hasher = new SHA1Hasher();
-        String hashedPassword = hasher.HashSHA1(username,password);
+        SHA256Hasher hasher = new SHA256Hasher();
+        byte [] byteSalt = hasher.getSalt();
+        String salt = hasher.byteToString(byteSalt);
+        String hashedPassword = hasher.HashSHA256(salt,password);
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
-            rowsAffected = stmt.executeUpdate("INSERT INTO Users (Username, Password) VALUES ('"+username+"','"+hashedPassword+"')");
+            rowsAffected = stmt.executeUpdate("INSERT INTO Users (Username, Password, Salt) VALUES ('"+username+"','"+hashedPassword+"','"+salt+"')");
             con.close();
         } catch (Exception e) {
             System.out.println(e);

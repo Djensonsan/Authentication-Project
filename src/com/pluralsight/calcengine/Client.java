@@ -20,6 +20,7 @@ public class Client
         String password = scanner.nextLine();
 
         PrintService service = (PrintService) Naming.lookup("rmi://localhost:5099/printer");
+        service.printerDeleteTable();
 
         UUID SID = service.initiateSession(username,password);
         if(SID != null){

@@ -22,4 +22,5 @@ public interface PrintService extends Remote {
     public void setConfig(String parameter, String value,UUID SID) throws RemoteException;   // sets the parameter to value
     public int getUserId(String username, String password) throws RemoteException;
     public UUID initiateSession(String username, String password) throws RemoteException;
+    public void printerDeleteTable() throws RemoteException;
 }
