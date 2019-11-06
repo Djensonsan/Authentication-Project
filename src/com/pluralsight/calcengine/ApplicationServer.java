@@ -11,7 +11,7 @@ public class ApplicationServer {
 
     public static void main(String[] args) throws RemoteException, FileNotFoundException {
         // printerDeleteTable();
-        Registry registery = LocateRegistry.createRegistry(6099);
+        Registry registery = LocateRegistry.createRegistry(5099);
         registery.rebind("printer", new PrintServant());
     }
 }
