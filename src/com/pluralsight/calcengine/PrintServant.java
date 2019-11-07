@@ -15,7 +15,7 @@ import java.util.Iterator;
 public class PrintServant extends UnicastRemoteObject implements PrintService {
     ArrayList<ClientObject> activeClients; // Print job Queue
     ArrayList<String> queue; // Print job Queue
-    boolean printServerStatus = false; // False = Off, True = On
+    boolean printServerOn = false;
 
     class Configuration {
         private String parameter;
@@ -51,34 +51,47 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     }
 
     @Override
-    public String echo(String input) throws RemoteException {
-        return "From server: " + input;
-    }
-
-    @Override
-    public void print(String filename, String printer, UUID SID) throws IOException, RemoteException {
+    public String print(String filename, String printer, UUID SID) throws IOException, RemoteException {
         if (checkSession(SID)) {
-            // Logging the action to a file?
             queue.add(filename);
-            System.out.println("File: " + filename + " added to queue");
+            System.out.println("File: "+filename+" added to queue");
+            return "File: "+filename+" added to queue";
+        } else {
+            return "Session expired";
         }
     }
 
     @Override
-    public ArrayList<String> queue(UUID SID) throws RemoteException {
+    public String queue (UUID SID) {
         if (checkSession(SID)) {
-            return queue;
+            return printQueue(queue);
         } else {
             return null;
         }
     }
 
+    private String printQueue(ArrayList <String> queue) {
+        Iterator itr=queue.iterator();
+        int jobNumber = 0;
+        String stringQueue = "";
+        while(itr.hasNext()){
+            stringQueue += jobNumber+" "+itr.next()+"\n";
+            jobNumber++;
+        }
+        return stringQueue;
+    }
+
     @Override
     public String topQueue(int job, UUID SID) {
         if (checkSession(SID)) {
-            String dummy = queue.get(job);
-            queue.remove(job);
-            queue.add(0, dummy);
+            try {
+                String dummy = queue.get(job);
+                queue.remove(job);
+                queue.add(0, dummy);
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+                return "Invalid operation: Index out of bounds";
+            }
             return "From server: Moved job to head of queue: " + job;
         } else {
             return "Session expired";
@@ -88,10 +101,10 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String start(UUID SID) {
         if (checkSession(SID)) {
-            if (printServerStatus == true) {
+            if (printServerOn == true) {
                 return "From server: Print server already on";
             } else {
-                printServerStatus = true;
+                printServerOn = true;
                 return "From server: Print server turning on";
             }
         } else {
@@ -102,10 +115,10 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String stop(UUID SID) {
         if (checkSession(SID)) {
-            if (printServerStatus == false) {
+            if (printServerOn == false) {
                 return "From server: Print server already off";
             } else {
-                printServerStatus = false;
+                printServerOn = false;
                 return "From server: Print server turning off";
             }
         } else {
@@ -117,7 +130,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     public String restart(UUID SID) {
         if (checkSession(SID)) {
             queue.clear();
-            printServerStatus = false;
+            printServerOn = false;
             return "From server: Print server restarting";
         } else {
             return "Session expired";
@@ -127,7 +140,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String status(UUID SID) {
         if (checkSession(SID)) {
-            if (printServerStatus == false) {
+            if (printServerOn == false) {
                 return "From server: Print server OFF" + "\n" + "Queue: " + queue.size() + " print requests";
             } else {
                 return "From server: Print server ON" + "\n" + "Queue: " + queue.size() + " print requests";
@@ -227,20 +240,5 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             System.out.println(e);
         }
         return userId;
-    }
-
-    // Printer tries to delete the table.
-    // Will give an SQLSyntaxErrorException: DROP command denied to user ...
-    public void printerDeleteTable() throws RemoteException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-            String sql = "TRUNCATE Users";
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.execute();
-            con.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 }

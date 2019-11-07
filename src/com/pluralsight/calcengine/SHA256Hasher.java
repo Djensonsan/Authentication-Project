@@ -24,7 +24,7 @@ public class SHA256Hasher {
 
     public static byte[] getSalt() {
         SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
+        byte[] salt = new byte[12];
         random.nextBytes(salt);
         return salt;
     }

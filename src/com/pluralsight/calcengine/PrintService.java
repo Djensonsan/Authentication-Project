@@ -7,12 +7,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public interface PrintService extends Remote {
-
-    // To test
-    public String echo (String input) throws RemoteException;
-    // Real Functionality
-    public void print (String filename, String printer, UUID SID) throws IOException, RemoteException;   // prints file filename on the specified printer
-    public ArrayList<String> queue(UUID SID) throws RemoteException;   // lists the print queue on the user's display in lines of the form <job number>   <file name>
+    public String print(String filename, String printer, UUID SID) throws IOException, RemoteException;   // prints file filename on the specified printer
+    public String queue(UUID SID) throws RemoteException;   // lists the print queue on the user's display in lines of the form <job number>   <file name>
     public String topQueue(int job,UUID SID) throws RemoteException;   // moves job to the top of the queue
     public String start(UUID SID) throws RemoteException;   // starts the print server
     public String stop(UUID SID) throws RemoteException;   // stops the print server
@@ -22,5 +18,4 @@ public interface PrintService extends Remote {
     public void setConfig(String parameter, String value,UUID SID) throws RemoteException;   // sets the parameter to value
     public int getUserId(String username, String password) throws RemoteException;
     public UUID initiateSession(String username, String password) throws RemoteException;
-    public void printerDeleteTable() throws RemoteException;
 }

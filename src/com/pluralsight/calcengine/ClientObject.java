@@ -4,8 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class ClientObject {
-    int timeoutSeconds = 1000;
-    String username;
+    int timeoutSeconds = 5;
     UUID uuid;
     Instant start;
 
@@ -26,8 +25,5 @@ public class ClientObject {
 
     public UUID getUuid() {
         return uuid;
-    }
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 }
