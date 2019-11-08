@@ -7,8 +7,10 @@ public class ClientObject {
     int timeoutSeconds = 5;
     UUID uuid;
     Instant start;
+    String username;
 
-    public ClientObject(UUID SID) {
+    public ClientObject(UUID SID, String username) {
+        this.username = username;
         this.uuid = SID;
         this.start = Instant.now();
     }
@@ -25,5 +27,9 @@ public class ClientObject {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

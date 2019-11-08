@@ -10,12 +10,15 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 
-// Notes: Do you not communicate with the printserver if it's off?
-// Try catch statements?
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.io.IOException;
+
 public class PrintServant extends UnicastRemoteObject implements PrintService {
     ArrayList<ClientObject> activeClients; // Print job Queue
     ArrayList<String> queue; // Print job Queue
     boolean printServerOn = false;
+    private Logger logger;
 
     class Configuration {
         private String parameter;
@@ -41,41 +44,52 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     ArrayList<Configuration> configurations = new ArrayList<>(); //stores the Configurations
 
-    public PrintServant() throws RemoteException {
+    public PrintServant() throws IOException {
         super();
         queue = new ArrayList<String>(); //Creating arraylist, used arraylist instead of queue/linkedlist to keep it simple.
         activeClients = new ArrayList<ClientObject>(); //Arraylist with all active clients
         configurations.add(new Configuration("colours", "black and white")); //Setting three configurations
         configurations.add(new Configuration("orientation", "portrait"));
         configurations.add(new Configuration("size", "A4"));
+
+        FileHandler handler = new FileHandler("printServer.log",8096,1, true);
+        logger = Logger.getLogger(PrintServant.class.getName());
+        logger.addHandler(handler);
     }
 
     @Override
     public String print(String filename, String printer, UUID SID) throws IOException, RemoteException {
-        if (checkSession(SID)) {
-            queue.add(filename);
-            System.out.println("File: "+filename+" added to queue");
-            return "File: "+filename+" added to queue";
+        if (printServerOn == true) {
+            if (checkSession(SID)!=null) {
+                queue.add(filename);
+                return "File: " + filename + " added to queue";
+            } else {
+                return "Session expired or invalid SID";
+            }
         } else {
-            return "Session expired";
+            return "Print server off";
         }
     }
 
     @Override
-    public String queue (UUID SID) {
-        if (checkSession(SID)) {
-            return printQueue(queue);
+    public String queue(UUID SID) {
+        if (printServerOn == true) {
+            if (checkSession(SID)!=null) {
+                return printQueue(queue);
+            } else {
+                return null;
+            }
         } else {
-            return null;
+            return "Print server off";
         }
     }
 
-    private String printQueue(ArrayList <String> queue) {
-        Iterator itr=queue.iterator();
+    private String printQueue(ArrayList<String> queue) {
+        Iterator itr = queue.iterator();
         int jobNumber = 0;
         String stringQueue = "";
-        while(itr.hasNext()){
-            stringQueue += jobNumber+" "+itr.next()+"\n";
+        while (itr.hasNext()) {
+            stringQueue += jobNumber + " " + itr.next() + "\n";
             jobNumber++;
         }
         return stringQueue;
@@ -83,24 +97,28 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     @Override
     public String topQueue(int job, UUID SID) {
-        if (checkSession(SID)) {
-            try {
-                String dummy = queue.get(job);
-                queue.remove(job);
-                queue.add(0, dummy);
-            } catch (IndexOutOfBoundsException e) {
-                e.printStackTrace();
-                return "Invalid operation: Index out of bounds";
+        if (printServerOn == true) {
+            if (checkSession(SID)!=null) {
+                try {
+                    String dummy = queue.get(job);
+                    queue.remove(job);
+                    queue.add(0, dummy);
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                    return "Invalid operation: Index out of bounds";
+                }
+                return "From server: Moved job to head of queue: " + job;
+            } else {
+                return "Session expired or invalid SID";
             }
-            return "From server: Moved job to head of queue: " + job;
         } else {
-            return "Session expired";
+            return "Print server off";
         }
     }
 
     @Override
     public String start(UUID SID) {
-        if (checkSession(SID)) {
+        if (checkSession(SID)!=null) {
             if (printServerOn == true) {
                 return "From server: Print server already on";
             } else {
@@ -108,13 +126,13 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 return "From server: Print server turning on";
             }
         } else {
-            return "Session expired";
+            return "Session expired or invalid SID";
         }
     }
 
     @Override
     public String stop(UUID SID) {
-        if (checkSession(SID)) {
+        if (checkSession(SID)!=null) {
             if (printServerOn == false) {
                 return "From server: Print server already off";
             } else {
@@ -122,61 +140,72 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 return "From server: Print server turning off";
             }
         } else {
-            return "Session expired";
+            return "Session expired or invalid SID";
         }
     }
 
+    // Restart modelled as clearing the queue by turning "on/off", end-state is "on" again.
     @Override
     public String restart(UUID SID) {
-        if (checkSession(SID)) {
+        if (checkSession(SID)!=null) {
             queue.clear();
-            printServerOn = false;
+            printServerOn = true;
             return "From server: Print server restarting";
         } else {
-            return "Session expired";
+            return "Session expired or invalid SID";
         }
     }
 
     @Override
     public String status(UUID SID) {
-        if (checkSession(SID)) {
-            if (printServerOn == false) {
-                return "From server: Print server OFF" + "\n" + "Queue: " + queue.size() + " print requests";
+        if (printServerOn == true) {
+            if (checkSession(SID)!=null) {
+                if (printServerOn == false) {
+                    return "From server: Print server OFF" + "\n" + "Queue: " + queue.size() + " print requests";
+                } else {
+                    return "From server: Print server ON" + "\n" + "Queue: " + queue.size() + " print requests";
+                }
             } else {
-                return "From server: Print server ON" + "\n" + "Queue: " + queue.size() + " print requests";
+                return "Session expired or invalid SID";
             }
         } else {
-            return "Session expired";
+            return "Print server off";
         }
     }
 
     @Override
     public String readConfig(String parameter, UUID SID) {
-        if (checkSession(SID)) {
-            for (int i = 0; i < configurations.size(); i++) {
-                if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
-                    return configurations.get(i).getValue();
+        if (printServerOn == true) {
+            if (checkSession(SID)!=null) {
+                for (int i = 0; i < configurations.size(); i++) {
+                    if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
+                        return configurations.get(i).getValue();
+                    }
                 }
+                return "No parameter with this name";
+            } else {
+                return "Session expired or invalid SID";
             }
-            return "No parameter with this name";
         } else {
-            return "Session expired";
+            return "Print server off";
         }
     }
 
     @Override
     public void setConfig(String parameter, String value, UUID SID) {
-        if (checkSession(SID)) {
-            for (int i = 0; i < configurations.size(); i = i + 1) {
-                if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
-                    configurations.get(i).setValue(value);
+        if (printServerOn == true) {
+            if (checkSession(SID)!=null) {
+                for (int i = 0; i < configurations.size(); i = i + 1) {
+                    if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
+                        configurations.get(i).setValue(value);
+                    }
                 }
             }
         }
     }
 
     // When the Session time has expired, the clientObject will be deleted and the client needs to authenticate again.
-    public boolean checkSession(UUID SID) {
+    private String checkSession(UUID SID) {
         Iterator<ClientObject> iter = activeClients.iterator(); //the iter should handle the exceptions that can be caused by removing an item while iterating on the list
         while (iter.hasNext()) {
             ClientObject client = iter.next();
@@ -184,10 +213,14 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 iter.remove();
                 //System.out.println("client disconnected"); //Use to check if it is working
             } else if (client.getUuid().equals(SID)) {
-                return true;
+                StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+                StackTraceElement e = stacktrace[2];
+                String methodName = e.getMethodName();
+                logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
+                return client.getUsername();
             }
         }
-        return false;
+        return null;
     }
 
 
@@ -197,7 +230,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         UUID SID = null;
         if (ID > 0) {
             SID = UUID.randomUUID();
-            ClientObject client = new ClientObject(SID);
+            ClientObject client = new ClientObject(SID,username);
             activeClients.add(client);
         }
         return SID;

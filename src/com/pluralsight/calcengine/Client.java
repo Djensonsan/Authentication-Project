@@ -25,10 +25,11 @@ public class Client
         } else {
             System.out.println("Login failed for user: "+username);
         }
-        service.print("Docs.txt", "A1",SID);
-        service.print("File.txt", "A1",SID);
-        service.print("Words.txt", "A1",SID);
-        service.print("Train.txt", "A1",SID);
+        System.out.println(service.start(SID));
+        System.out.println(service.print("Docs.txt", "A1",SID));
+        System.out.println(service.print("File.txt", "A1",SID));
+        System.out.println(service.print("Words.txt", "A1",SID));
+        System.out.println(service.print("Train.txt", "A1",SID));
 
         // Print the Queue
         System.out.println(service.queue(SID));
@@ -36,18 +37,18 @@ public class Client
         // Server status
         System.out.println(service.status(SID));
 
-        // Server start/stop
-        System.out.println(service.start(SID));
-        System.out.println(service.stop(SID));
-
         // Server TopQueue
-        service.topQueue(2,SID);
+        System.out.println(service.topQueue(2,SID));
         System.out.println(service.queue(SID));
 
         // Server restart
         System.out.println(service.restart(SID));
         // Server status
         System.out.println(service.status(SID));
+
+        // Server start/stop
+        System.out.println(service.start(SID));
+        System.out.println(service.stop(SID));
 
         TimeUnit.SECONDS.sleep(15);
         service.print("Shouldnotaccept.txt", "A1",SID); //to test the timeout of the session

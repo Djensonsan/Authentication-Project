@@ -16,6 +16,7 @@ public interface PrintService extends Remote {
     public String status(UUID SID) throws RemoteException;  // prints status of printer on the user's display
     public String readConfig(String parameter,UUID SID) throws RemoteException;   // prints the value of the parameter on the user's display
     public void setConfig(String parameter, String value,UUID SID) throws RemoteException;   // sets the parameter to value
+    // Extra Functionality:
     public int getUserId(String username, String password) throws RemoteException;
     public UUID initiateSession(String username, String password) throws RemoteException;
 }
