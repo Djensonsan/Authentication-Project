@@ -8,11 +8,14 @@ public class ClientObject {
     UUID uuid;
     Instant start;
     String username;
+    String accessList;
 
-    public ClientObject(UUID SID, String username) {
+
+    public ClientObject(UUID SID, String username, String accessList) {
         this.username = username;
         this.uuid = SID;
         this.start = Instant.now();
+        this.accessList = accessList;
     }
 
     public boolean timeElapsed() {
@@ -31,5 +34,9 @@ public class ClientObject {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getAccessList() {
+        return accessList;
     }
 }

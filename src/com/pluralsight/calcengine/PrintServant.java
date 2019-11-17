@@ -60,11 +60,11 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String print(String filename, String printer, UUID SID) throws IOException, RemoteException {
         if (printServerOn == true) {
-            if (checkSession(SID)!=null) {
+            if (checkSession(SID)==true) {
                 queue.add(filename);
                 return "File: " + filename + " added to queue";
             } else {
-                return "Session expired or invalid SID";
+                return "Session expired, invalid SID or access denied to function.";
             }
         } else {
             return "Print server off";
@@ -74,10 +74,10 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String queue(UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)!=null) {
+            if (checkSession(SID)==true) {
                 return printQueue(queue);
             } else {
-                return null;
+                return "Session expired, invalid SID or access denied to function.";
             }
         } else {
             return "Print server off";
@@ -98,7 +98,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String topQueue(int job, UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)!=null) {
+            if (checkSession(SID)==true) {
                 try {
                     String dummy = queue.get(job);
                     queue.remove(job);
@@ -109,7 +109,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 }
                 return "From server: Moved job to head of queue: " + job;
             } else {
-                return "Session expired or invalid SID";
+                return "Session expired, invalid SID or access denied to function.";
             }
         } else {
             return "Print server off";
@@ -118,7 +118,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     @Override
     public String start(UUID SID) {
-        if (checkSession(SID)!=null) {
+        if (checkSession(SID)==true) {
             if (printServerOn == true) {
                 return "From server: Print server already on";
             } else {
@@ -126,13 +126,13 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 return "From server: Print server turning on";
             }
         } else {
-            return "Session expired or invalid SID";
+            return "Session expired, invalid SID or access denied to function.";
         }
     }
 
     @Override
     public String stop(UUID SID) {
-        if (checkSession(SID)!=null) {
+        if (checkSession(SID)==true) {
             if (printServerOn == false) {
                 return "From server: Print server already off";
             } else {
@@ -140,33 +140,33 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 return "From server: Print server turning off";
             }
         } else {
-            return "Session expired or invalid SID";
+            return "Session expired, invalid SID or access denied to function.";
         }
     }
 
     // Restart modelled as clearing the queue by turning "on/off", end-state is "on" again.
     @Override
     public String restart(UUID SID) {
-        if (checkSession(SID)!=null) {
+        if (checkSession(SID)==true) {
             queue.clear();
             printServerOn = true;
             return "From server: Print server restarting";
         } else {
-            return "Session expired or invalid SID";
+            return "Session expired, invalid SID or access denied to function.";
         }
     }
 
     @Override
     public String status(UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)!=null) {
+            if (checkSession(SID)==true) {
                 if (printServerOn == false) {
                     return "From server: Print server OFF" + "\n" + "Queue: " + queue.size() + " print requests";
                 } else {
                     return "From server: Print server ON" + "\n" + "Queue: " + queue.size() + " print requests";
                 }
             } else {
-                return "Session expired or invalid SID";
+                return "Session expired, invalid SID or access denied to function.";
             }
         } else {
             return "Print server off";
@@ -176,7 +176,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String readConfig(String parameter, UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)!=null) {
+            if (checkSession(SID)==true) {
                 for (int i = 0; i < configurations.size(); i++) {
                     if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
                         return configurations.get(i).getValue();
@@ -184,7 +184,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 }
                 return "No parameter with this name";
             } else {
-                return "Session expired or invalid SID";
+                return "Session expired, invalid SID or access denied to function.";
             }
         } else {
             return "Print server off";
@@ -194,7 +194,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public void setConfig(String parameter, String value, UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)!=null) {
+            if (checkSession(SID)==true) {
                 for (int i = 0; i < configurations.size(); i = i + 1) {
                     if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
                         configurations.get(i).setValue(value);
@@ -205,22 +205,26 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     }
 
     // When the Session time has expired, the clientObject will be deleted and the client needs to authenticate again.
-    private String checkSession(UUID SID) {
+    // Will also check if the user is allowed to call the 'calling' function by checking the user's permissions.
+    private boolean checkSession(UUID SID) {
+        boolean sessionsValid = false;
         Iterator<ClientObject> iter = activeClients.iterator(); //the iter should handle the exceptions that can be caused by removing an item while iterating on the list
         while (iter.hasNext()) {
             ClientObject client = iter.next();
             if (client.timeElapsed()) {
                 iter.remove();
-                //System.out.println("client disconnected"); //Use to check if it is working
             } else if (client.getUuid().equals(SID)) {
+                String accessList = client.getAccessList();
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
-                logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
-                return client.getUsername();
+                if(accessList.contains(methodName)){
+                    sessionsValid = true;
+                    logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
+                }
             }
         }
-        return null;
+        return sessionsValid;
     }
 
 
@@ -229,14 +233,14 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         int ID = getUserId(username, password);
         UUID SID = null;
         if (ID > 0) {
+            String accessList = getUserAccessControl(username);
             SID = UUID.randomUUID();
-            ClientObject client = new ClientObject(SID,username);
+            ClientObject client = new ClientObject(SID,username,accessList);
             activeClients.add(client);
         }
         return SID;
     }
 
-    // Problem what if multiple persons have same username?
     @Override
     public int getUserId(String username, String password) throws RemoteException {
         int userId = -1;
@@ -273,5 +277,25 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             System.out.println(e);
         }
         return userId;
+    }
+
+    @Override
+    public String getUserAccessControl(String username) throws RemoteException {
+        String accessList = "";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+            String sql = "SELECT Access from USERS WHERE Username = ?;";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                accessList = rs.getString("Access");
+            }
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return accessList;
     }
 }

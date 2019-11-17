@@ -19,4 +19,5 @@ public interface PrintService extends Remote {
     // Extra Functionality:
     public int getUserId(String username, String password) throws RemoteException;
     public UUID initiateSession(String username, String password) throws RemoteException;
+    public String getUserAccessControl(String username) throws RemoteException;
 }

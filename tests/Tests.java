@@ -21,8 +21,8 @@ public class Tests {
 
     @Test
     public void testStop() throws RemoteException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.start(SID);
         String dummy = service.stop(SID);
@@ -33,8 +33,8 @@ public class Tests {
 
     @Test
     public void testStart() throws RemoteException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.stop(SID);
         String dummy = service.start(SID);
@@ -45,8 +45,8 @@ public class Tests {
 
     @Test
     public void testServerOff() throws RemoteException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.stop(SID);
         String dummy = service.topQueue(1,SID);
@@ -57,8 +57,8 @@ public class Tests {
 
     @Test
     public void testRestart() throws RemoteException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.restart(SID);
         String dummy = service.queue(SID);
@@ -67,16 +67,16 @@ public class Tests {
 
     @Test
     public void testInitiate1() throws RemoteException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         assertNotNull(SID);
     }
 
     @Test
     public void testInitiate2() throws RemoteException {
-        String username = "Craig";
-        String password = "who";
+        String username = "Alice";
+        String password = "vMEr";
         UUID SID = service.initiateSession(username,password);
         assertNull(SID);
     }
@@ -93,24 +93,24 @@ public class Tests {
     public void testRandomSID() throws IOException {
         UUID SID = UUID.randomUUID();
         String dummy = service.start(SID);
-        assertEquals(dummy,"Session expired or invalid SID");
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
         dummy = service.stop(SID);
-        assertEquals(dummy,"Session expired or invalid SID");
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
         dummy = service.status(SID);
-        assertEquals(dummy,"Session expired or invalid SID");
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
         dummy = service.restart(SID);
-        assertEquals(dummy,"Session expired or invalid SID");
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
         dummy = service.print("Docs.txt", "A1",SID);
-        assertEquals(dummy,"Session expired or invalid SID");
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
         service.print("File.txt", "A1",SID);
         dummy = service.topQueue(2,SID);
-        assertEquals(dummy,"Session expired or invalid SID");
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
     }
 
     @Test
     public void testPrint() throws IOException, InterruptedException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.restart(SID);
         service.print("Docs.txt", "A1",SID);
@@ -118,13 +118,13 @@ public class Tests {
         assertEquals(dummy,"0 Docs.txt\n");
         TimeUnit.SECONDS.sleep(7);
         String dummy2 = service.print("File.txt", "A1",SID);
-        assertEquals(dummy2,"Session expired or invalid SID");
+        assertEquals(dummy2,"Session expired, invalid SID or access denied to function.");
     }
 
     @Test
     public void testTopQueue1() throws IOException, InterruptedException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.restart(SID);
         service.print("Docs.txt", "A1",SID);
@@ -136,8 +136,8 @@ public class Tests {
 
     @Test
     public void testTopQueue2() throws IOException, InterruptedException {
-        String username = "Craig";
-        String password = "whoop";
+        String username = "Alice";
+        String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.restart(SID);
         service.print("Docs.txt", "A1",SID);
@@ -160,5 +160,49 @@ public class Tests {
             dummy = e;
         }
         assertEquals(dummy.getMessage(),"DROP command denied to user 'Printer'@'localhost' for table 'users'");
+    }
+
+
+    // Alice should be able to call all functions.
+    @Test
+    public void testAccessControlAlice() throws IOException, InterruptedException {
+        String username = "Alice";
+        String password = "vMErcmgF";
+        UUID SID = service.initiateSession(username,password);
+        String dummy = service.restart(SID);
+        service.print("Docs.txt", "A1",SID);
+        dummy = service.queue(SID);
+        assertEquals(dummy,"0 Docs.txt\n");
+        service.print("File.txt", "A1",SID);
+        dummy = service.stop(SID);
+        assertEquals(dummy,"From server: Print server turning off");
+        dummy = service.start(SID);
+        assertEquals(dummy,"From server: Print server turning on");
+        dummy = service.topQueue(1,SID);
+        assertEquals(dummy,"From server: Moved job to head of queue: 1");
+        dummy = service.status(SID);
+        assertEquals(dummy,"From server: Print server ON\nQueue: 2 print requests");
+        dummy = service.restart(SID);
+        assertEquals(dummy,"From server: Print server restarting");
+    }
+
+    @Test
+    public void testAccessControlBob() throws IOException, InterruptedException {
+        String username = "Bob";
+        String password = "zbY8MR6L";
+        UUID SID = service.initiateSession(username,password);
+        service.print("Docs.txt", "A1",SID);
+        String dummy = service.queue(SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        dummy = service.stop(SID);
+        assertEquals(dummy,"From server: Print server turning off");
+        dummy = service.start(SID);
+        assertEquals(dummy,"From server: Print server turning on");
+        dummy = service.topQueue(1,SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        dummy = service.status(SID);
+        assertEquals(dummy,"From server: Print server ON\nQueue: 0 print requests");
+        dummy = service.restart(SID);
+        assertEquals(dummy,"From server: Print server restarting");
     }
 }
