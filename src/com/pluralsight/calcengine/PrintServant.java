@@ -1,10 +1,7 @@
 package com.pluralsight.calcengine;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -52,7 +49,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         configurations.add(new Configuration("orientation", "portrait"));
         configurations.add(new Configuration("size", "A4"));
 
-        FileHandler handler = new FileHandler("printServer.log",8096,1, true);
+        FileHandler handler = new FileHandler("printServer.log", 8096, 1, true);
         logger = Logger.getLogger(PrintServant.class.getName());
         logger.addHandler(handler);
     }
@@ -60,7 +57,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String print(String filename, String printer, UUID SID) throws IOException, RemoteException {
         if (printServerOn == true) {
-            if (checkSession(SID)==true) {
+            if (checkSession(SID) == true) {
                 queue.add(filename);
                 return "File: " + filename + " added to queue";
             } else {
@@ -74,7 +71,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String queue(UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)==true) {
+            if (checkSession(SID) == true) {
                 return printQueue(queue);
             } else {
                 return "Session expired, invalid SID or access denied to function.";
@@ -98,7 +95,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String topQueue(int job, UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)==true) {
+            if (checkSession(SID) == true) {
                 try {
                     String dummy = queue.get(job);
                     queue.remove(job);
@@ -118,7 +115,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     @Override
     public String start(UUID SID) {
-        if (checkSession(SID)==true) {
+        if (checkSession(SID) == true) {
             if (printServerOn == true) {
                 return "From server: Print server already on";
             } else {
@@ -132,7 +129,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     @Override
     public String stop(UUID SID) {
-        if (checkSession(SID)==true) {
+        if (checkSession(SID) == true) {
             if (printServerOn == false) {
                 return "From server: Print server already off";
             } else {
@@ -147,7 +144,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     // Restart modelled as clearing the queue by turning "on/off", end-state is "on" again.
     @Override
     public String restart(UUID SID) {
-        if (checkSession(SID)==true) {
+        if (checkSession(SID) == true) {
             queue.clear();
             printServerOn = true;
             return "From server: Print server restarting";
@@ -159,7 +156,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String status(UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)==true) {
+            if (checkSession(SID) == true) {
                 if (printServerOn == false) {
                     return "From server: Print server OFF" + "\n" + "Queue: " + queue.size() + " print requests";
                 } else {
@@ -176,7 +173,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public String readConfig(String parameter, UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)==true) {
+            if (checkSession(SID) == true) {
                 for (int i = 0; i < configurations.size(); i++) {
                     if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
                         return configurations.get(i).getValue();
@@ -194,7 +191,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     @Override
     public void setConfig(String parameter, String value, UUID SID) {
         if (printServerOn == true) {
-            if (checkSession(SID)==true) {
+            if (checkSession(SID) == true) {
                 for (int i = 0; i < configurations.size(); i = i + 1) {
                     if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
                         configurations.get(i).setValue(value);
@@ -218,9 +215,9 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
-                if(accessList.contains(methodName)){
+                if (accessList.contains(methodName)) {
                     sessionsValid = true;
-                    logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
+                    logger.info("Method invoked: " + methodName + " By: " + client.getUsername());
                 }
             }
         }
@@ -235,7 +232,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         if (ID > 0) {
             String accessList = getUserAccessControl(username);
             SID = UUID.randomUUID();
-            ClientObject client = new ClientObject(SID,username,accessList);
+            ClientObject client = new ClientObject(SID, username, accessList);
             activeClients.add(client);
         }
         return SID;
@@ -285,7 +282,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-            String sql = "SELECT Access from USERS WHERE Username = ?;";
+            String sql = "SELECT roles.access FROM roles JOIN users ON idroles=role WHERE Username=?;"; //This only takes into account the case where there is 1 role per user
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -299,3 +296,4 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return accessList;
     }
 }
+
