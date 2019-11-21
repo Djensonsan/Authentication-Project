@@ -8,7 +8,7 @@ public class UserDatabase {
     // Can be root for example.
     // Used access control of mySQL, Printer user only has SELECT privilege.
     static String admin = "root";
-    static String adminPassword = "rrbdz962";
+    static String adminPassword = "";
 
     public static void main(String args[]) {
         Boolean dropSuccess = dropPrinterAccount();
@@ -23,6 +23,7 @@ public class UserDatabase {
         AddUser("Erica","RnPRs958","print,queue","DefaultUser");
         AddUser("Fred","W6S9NACb","print,queue","DefaultUser");
         AddUser("George","KNdQT5w7","print,queue","DefaultUser");
+        AddUser("John", "JnYhd8g4", "start,stop,status,restart,setConfig,readConfig,print,queue","ServiceTechnician,DefaultUser");
         AddRole("ServerManager", "start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue");
         AddRole("ServiceTechnician", "start,stop,status,restart,setConfig,readConfig");
         AddRole("PowerUser", "print,topQueue,queue,topQueue");

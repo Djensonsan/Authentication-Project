@@ -278,16 +278,40 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     @Override
     public String getUserAccessControl(String username) throws RemoteException {
+        String roles = "";
         String accessList = "";
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-            String sql = "SELECT roles.access FROM roles JOIN users ON idroles=role WHERE Username=?;"; //This only takes into account the case where there is 1 role per user
+            String sql = "SELECT role FROM users WHERE Username=?;";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                accessList = rs.getString("Access");
+                roles = rs.getString("Role");
+            }
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        //transform rolesList
+        String[] rolesList = roles.split(",");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+            String sql = "SELECT access FROM roles WHERE idroles=?";
+            for (int i =1; i<rolesList.length; i++){
+                sql = sql+" OR idroles=?";
+            }
+            sql = sql + ";";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            for (int i =0; i<rolesList.length; i++){
+                stmt.setString(i+1, rolesList[i]);
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                accessList = accessList + rs.getString("Access");
             }
             con.close();
         } catch (Exception e) {
@@ -295,5 +319,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         }
         return accessList;
     }
+
+
 }
 
