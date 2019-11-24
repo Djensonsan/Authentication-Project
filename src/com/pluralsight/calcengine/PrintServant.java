@@ -215,6 +215,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
+
                 if (accessList.contains(methodName)) {
                     sessionsValid = true;
                     logger.info("Method invoked: " + methodName + " By: " + client.getUsername());
