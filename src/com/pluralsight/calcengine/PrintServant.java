@@ -40,9 +40,9 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         public void setValue(String value) {
             this.value = value;
         }
-    } //defines what is a Configuration (couples of parameters and values)
+    }
 
-    ArrayList<Configuration> configurations = new ArrayList<>(); //stores the Configurations
+    ArrayList <Configuration> configurations = new ArrayList<>();
 
     public PrintServant() throws IOException {
         super();
@@ -157,7 +157,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     }
 
     @Override
-    public String status(UUID SID) {
+    public String status (UUID SID) {
         if (printServerOn == true) {
             if (checkSession(SID)==true) {
                 if (printServerOn == false) {
@@ -174,11 +174,11 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
     }
 
     @Override
-    public String readConfig(String parameter, UUID SID) {
+    public String readConfig (String parameter, UUID SID) {
         if (printServerOn == true) {
             if (checkSession(SID)==true) {
                 for (int i = 0; i < configurations.size(); i++) {
-                    if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
+                    if (configurations.get(i).getParameter().equals(parameter)) {
                         return configurations.get(i).getValue();
                     }
                 }
@@ -196,7 +196,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         if (printServerOn == true) {
             if (checkSession(SID)==true) {
                 for (int i = 0; i < configurations.size(); i = i + 1) {
-                    if (configurations.get(i).getParameter().equals(parameter)) { //finds where is the parameter from the input
+                    if (configurations.get(i).getParameter().equals(parameter)) {
                         configurations.get(i).setValue(value);
                     }
                 }
@@ -218,7 +218,8 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
-                if(accessList.contains(methodName)){
+                String [] accessListValues = accessList.split(",");
+                if(Arrays.asList(accessListValues).contains(methodName)){
                     sessionsValid = true;
                     logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
                 }

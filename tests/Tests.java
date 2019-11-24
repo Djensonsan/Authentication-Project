@@ -170,39 +170,87 @@ public class Tests {
         String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         String dummy = service.restart(SID);
+        // Test Print & Queue
         service.print("Docs.txt", "A1",SID);
         dummy = service.queue(SID);
         assertEquals(dummy,"0 Docs.txt\n");
         service.print("File.txt", "A1",SID);
+        // Test Start & Stop
         dummy = service.stop(SID);
         assertEquals(dummy,"From server: Print server turning off");
         dummy = service.start(SID);
         assertEquals(dummy,"From server: Print server turning on");
+        // Test Topqueue, Status and Restart
         dummy = service.topQueue(1,SID);
         assertEquals(dummy,"From server: Moved job to head of queue: 1");
         dummy = service.status(SID);
         assertEquals(dummy,"From server: Print server ON\nQueue: 2 print requests");
         dummy = service.restart(SID);
         assertEquals(dummy,"From server: Print server restarting");
+        // Test setConfig and readConfig
+        assertEquals(dummy,"From server: Print server restarting");
+        service.setConfig("colours","Black",SID);
+        dummy = service.readConfig("colours",SID);
+        assertEquals(dummy,"Black");
     }
 
+    // Bob should not be able to call queue, print or topQueue.
+    // All other functions Bob should be able to call.
     @Test
     public void testAccessControlBob() throws IOException, InterruptedException {
         String username = "Bob";
         String password = "zbY8MR6L";
         UUID SID = service.initiateSession(username,password);
-        service.print("Docs.txt", "A1",SID);
-        String dummy = service.queue(SID);
+        // Test Print & Queue
+        String dummy = service.print("Docs.txt", "A1",SID);
         assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        dummy = service.queue(SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        // Test Start & Stop
         dummy = service.stop(SID);
         assertEquals(dummy,"From server: Print server turning off");
         dummy = service.start(SID);
         assertEquals(dummy,"From server: Print server turning on");
+        // Test Topqueue, Status and Restart
         dummy = service.topQueue(1,SID);
         assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
         dummy = service.status(SID);
         assertEquals(dummy,"From server: Print server ON\nQueue: 0 print requests");
         dummy = service.restart(SID);
+        // Test setConfig and readConfig
         assertEquals(dummy,"From server: Print server restarting");
+        service.setConfig("colours","Black",SID);
+        dummy = service.readConfig("colours",SID);
+        assertEquals(dummy,"Black");
+    }
+
+    // Cecilia should be able to call restart, queue, print and topQueue.
+    @Test
+    public void testAccessControlCecilia() throws IOException, InterruptedException {
+        String username = "Cecilia";
+        String password = "FRgBQ5sK";
+        UUID SID = service.initiateSession(username,password);
+        // Test Print & Queue
+        String dummy = service.restart(SID);
+        service.print("Docs.txt", "A1",SID);
+        dummy = service.queue(SID);
+        assertEquals(dummy,"0 Docs.txt\n");
+        service.print("File.txt", "A1",SID);
+        // Test Start & Stop
+        dummy = service.stop(SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        dummy = service.start(SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        // Test Topqueue, Status and Restart
+        dummy = service.topQueue(1,SID);
+        assertEquals(dummy,"From server: Moved job to head of queue: 1");
+        dummy = service.status(SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        dummy = service.restart(SID);
+        assertEquals(dummy,"From server: Print server restarting");
+        // Test setConfig and readConfig
+        service.setConfig("colours","Black",SID);
+        dummy = service.readConfig("colours",SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
     }
 }

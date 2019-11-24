@@ -1,15 +1,22 @@
 package com.pluralsight.calcengine;
 
 import java.sql.*;
+import java.util.Scanner;
 
 public class UserDatabase {
     // Username and password of the local mySQL instance admin.
     // Can be root for example.
     // Used access control of mySQL, Printer user only has SELECT privilege.
-    static String admin = "root";
-    static String adminPassword = "10jl0298";
+    static String admin;
+    static String adminPassword;
 
     public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Admin name: ");
+        admin = scanner.nextLine();
+        System.out.println("Password: ");
+        adminPassword = scanner.nextLine();
+
         Boolean dropSuccess = dropPrinterAccount();
         int rows = AddPrinterAccount();
         AddGrantsPrinterAccount();
@@ -17,11 +24,16 @@ public class UserDatabase {
         ClearTable("Users");
         AddUser("Alice","vMErcmgF","start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue");
         AddUser("Bob","zbY8MR6L","start,stop,status,restart,setConfig,readConfig");
-        AddUser("Cecilia","FRgBQ5sK","print,topQueue,queue,topQueue");
+        AddUser("Cecilia","FRgBQ5sK","print,restart,queue,topQueue");
         AddUser("David","FFcBr5Ej","print,queue");
         AddUser("Erica","RnPRs958","print,queue");
         AddUser("Fred","W6S9NACb","print,queue");
         AddUser("George","KNdQT5w7","print,queue");
+//        RemoveUser("Bob");
+//        RemoveUser("George");
+//        AddUser("George","KNdQT5w7","print,queue,start,stop,status,restart,setConfig,readConfig");
+//        AddUser("Henry","UTdQB5w8","print,queue");
+//        AddUser("Ida","BZdff5w9","print,restart,queue,topQueue");
     }
 
     // What about the channel between database and printer?
@@ -84,6 +96,21 @@ public class UserDatabase {
             Statement stmt = con.createStatement();
             rowsAffected = stmt.executeUpdate("INSERT INTO Users (Username, Password, Salt, Access) VALUES ('"+username+"','"+hashedPassword+"','"+salt+"','"+AccessList+"')");
             con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return rowsAffected;
+    }
+
+    // Returns the amount of rows affected by the query
+    private static int RemoveUser(String username) {
+        int rowsAffected = 0;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
+            Statement stmt = con.createStatement();
+            rowsAffected = stmt.executeUpdate("DELETE FROM Users WHERE Username = '"+username+"'");
         } catch (Exception e) {
             System.out.println(e);
         }

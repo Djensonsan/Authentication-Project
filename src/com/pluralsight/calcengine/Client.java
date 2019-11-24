@@ -54,5 +54,3 @@ public class Client
         service.print("Shouldnotaccept.txt", "A1",SID); //to test the timeout of the session
     }
 }
-
-
