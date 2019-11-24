@@ -2,15 +2,22 @@ package com.pluralsight.calcengine;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class UserDatabase {
     // Username and password of the local mySQL instance admin.
     // Can be root for example.
     // Used access control of mySQL, Printer user only has SELECT privilege.
-    static String admin = "root";
-    static String adminPassword = "";
+    static String admin;
+    static String adminPassword;
 
     public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Username: ");
+        admin = scanner.nextLine();
+        System.out.println("Password: ");
+        adminPassword = scanner.nextLine();
+
         Boolean dropSuccess = dropPrinterAccount();
         int rows = AddPrinterAccount();
         AddGrantsPrinterAccount();
