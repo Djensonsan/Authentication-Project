@@ -25,7 +25,7 @@ public class UserDatabase {
         ClearTable("Users");
         AddUser("Alice","vMErcmgF","start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue", "ServerManager");
         AddUser("Bob","zbY8MR6L","start,stop,status,restart,setConfig,readConfig","ServiceTechnician");
-        AddUser("Cecilia","FRgBQ5sK","print,topQueue,queue,topQueue","PowerUser");
+        AddUser("Cecilia","FRgBQ5sK","print,restart,queue,topQueue","PowerUser");
         AddUser("David","FFcBr5Ej","print,queue", "DefaultUser");
         AddUser("Erica","RnPRs958","print,queue","DefaultUser");
         AddUser("Fred","W6S9NACb","print,queue","DefaultUser");
@@ -33,7 +33,7 @@ public class UserDatabase {
         AddUser("John", "JnYhd8g4", "start,stop,status,restart,setConfig,readConfig,print,queue","ServiceTechnician,DefaultUser");
         AddRole("ServerManager", "start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue");
         AddRole("ServiceTechnician", "start,stop,status,restart,setConfig,readConfig");
-        AddRole("PowerUser", "print,topQueue,queue,topQueue");
+        AddRole("PowerUser", "print,restart,queue,topQueue");
         AddRole("DefaultUser","print,queue");
     }
 

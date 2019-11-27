@@ -215,8 +215,8 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
-
-                if (accessList.contains(methodName)) {
+                String [] accessListValues = accessList.split(",");
+                if(Arrays.asList(accessListValues).contains(methodName)){
                     sessionsValid = true;
                     logger.info("Method invoked: " + methodName + " By: " + client.getUsername());
                 }
@@ -312,12 +312,13 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             }
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                accessList = accessList + rs.getString("Access");
+                accessList = accessList+','+rs.getString("Access");
             }
             con.close();
         } catch (Exception e) {
             System.out.println(e);
         }
+        System.out.println(accessList);
         return accessList;
     }
 

@@ -17,7 +17,7 @@ public class Client
         System.out.println("Password: ");
         String password = scanner.nextLine();
 
-        PrintService service = (PrintService) Naming.lookup("rmi://localhost:5099/printer");
+        PrintService service = (PrintService) Naming.lookup("rmi://localhost:8099/printer");
 
         UUID SID = service.initiateSession(username,password);
         if(SID != null){
