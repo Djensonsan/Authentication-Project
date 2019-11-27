@@ -215,14 +215,15 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
-                if (accessList.contains(methodName)) {
+                if(accessList.contains(methodName)){
                     sessionsValid = true;
-                    logger.info("Method invoked: " + methodName + " By: " + client.getUsername());
+                    logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
                 }
             }
         }
         return sessionsValid;
     }
+
 
 
     @Override
@@ -320,6 +321,77 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return accessList;
     }
 
+    public void AddUser(String username, String password, String role, UUID SID) {
+        if (checkSession(SID) == true) {
+            SHA256Hasher hasher = new SHA256Hasher();
+            byte[] byteSalt = hasher.getSalt();
+            String salt = hasher.byteToString(byteSalt);
+            String hashedPassword = hasher.HashSHA256(salt, password);
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "INSERT INTO Users (Username, Password, Salt, Role) VALUES (?,?,?,?);";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, username);
+                stmt.setString(2, hashedPassword);
+                stmt.setString(3, salt);
+                stmt.setString(4, role);
+                ResultSet rs = stmt.executeQuery();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
 
+    public void AddRole(String role, String AccessList, UUID SID) {
+        if (checkSession(SID) == true) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "INSERT INTO Roles (idroles, access) VALUES (?,?);";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, role);
+                stmt.setString(2, AccessList);
+                ResultSet rs = stmt.executeQuery();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+    public void UpdateUser (String username, String role, UUID SID) {
+        if (checkSession(SID) == true) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "UPDATE Users SET role=? WHERE username=?;";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, role);
+                stmt.setString(2, username);
+                ResultSet rs = stmt.executeQuery();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+    public void RemoveUser (String username, UUID SID) {
+        if (checkSession(SID) == true) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "DELETE FROM Users WHERE username=?;";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, username);
+                ResultSet rs = stmt.executeQuery();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
 }
 
