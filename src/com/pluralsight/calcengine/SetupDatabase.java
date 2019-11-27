@@ -1,43 +1,31 @@
 package com.pluralsight.calcengine;
 
 import java.sql.*;
-import java.util.Scanner;
 
-public class UserDatabase {
+// Class used for setting-up the initial state of the database.
+public class SetupDatabase {
     // Username and password of the local mySQL instance admin.
-    // Can be root for example.
-    // Used access control of mySQL, Printer user only has SELECT privilege.
     static String admin;
     static String adminPassword;
 
-    public static void main(String args[]) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Admin name: ");
-        admin = scanner.nextLine();
-        System.out.println("Password: ");
-        adminPassword = scanner.nextLine();
+    public void setupDatabase(String admin, String password) {
+        this.admin = admin;
+        this.adminPassword = password;
 
-        Boolean dropSuccess = dropPrinterAccount();
-        int rows = AddPrinterAccount();
+        dropPrinterAccount();
+        AddPrinterAccount();
         AddGrantsPrinterAccount();
-        System.out.println("Affected rows: "+rows);
         ClearTable("Users");
-        AddUser("Alice","vMErcmgF","start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue");
+
+        AddUser("Alice","vMErcmgF","start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue,AddUser,RemoveUser");
         AddUser("Bob","zbY8MR6L","start,stop,status,restart,setConfig,readConfig");
         AddUser("Cecilia","FRgBQ5sK","print,restart,queue,topQueue");
         AddUser("David","FFcBr5Ej","print,queue");
         AddUser("Erica","RnPRs958","print,queue");
         AddUser("Fred","W6S9NACb","print,queue");
         AddUser("George","KNdQT5w7","print,queue");
-//        RemoveUser("Bob");
-//        RemoveUser("George");
-//        AddUser("George","KNdQT5w7","print,queue,start,stop,status,restart,setConfig,readConfig");
-//        AddUser("Henry","UTdQB5w8","print,queue");
-//        AddUser("Ida","BZdff5w9","print,restart,queue,topQueue");
     }
 
-    // What about the channel between database and printer?
-    // GRANT SELECT ON PWD.Users TO 'Printer1'@'localhost';
     private static Boolean dropPrinterAccount() {
         Boolean dropSuccess = false;
         try {
@@ -73,7 +61,7 @@ public class UserDatabase {
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
             stmt = con.createStatement();
-            rowsAffected += stmt.executeUpdate("GRANT SELECT ON *.* TO 'Printer'@'localhost';");
+            rowsAffected += stmt.executeUpdate("GRANT ALL PRIVILEGES ON *.* TO 'Printer'@'localhost';");
             con.close();
         } catch (Exception e) {
             System.out.println(e);
@@ -81,7 +69,6 @@ public class UserDatabase {
         return rowsAffected;
     }
 
-    // Returns the amount of rows affected by the query
     private static int AddUser(String username, String password,String AccessList) {
         int rowsAffected = 0;
         SHA256Hasher hasher = new SHA256Hasher();
@@ -96,21 +83,6 @@ public class UserDatabase {
             Statement stmt = con.createStatement();
             rowsAffected = stmt.executeUpdate("INSERT INTO Users (Username, Password, Salt, Access) VALUES ('"+username+"','"+hashedPassword+"','"+salt+"','"+AccessList+"')");
             con.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return rowsAffected;
-    }
-
-    // Returns the amount of rows affected by the query
-    private static int RemoveUser(String username) {
-        int rowsAffected = 0;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
-            Statement stmt = con.createStatement();
-            rowsAffected = stmt.executeUpdate("DELETE FROM Users WHERE Username = '"+username+"'");
         } catch (Exception e) {
             System.out.println(e);
         }

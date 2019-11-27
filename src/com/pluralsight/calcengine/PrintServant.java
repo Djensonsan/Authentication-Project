@@ -1,10 +1,7 @@
 package com.pluralsight.calcengine;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -44,7 +41,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
 
     ArrayList <Configuration> configurations = new ArrayList<>();
 
-    public PrintServant() throws IOException {
+    public PrintServant() throws IOException{
         super();
         queue = new ArrayList<String>(); //Creating arraylist, used arraylist instead of queue/linkedlist to keep it simple.
         activeClients = new ArrayList<ClientObject>(); //Arraylist with all active clients
@@ -298,5 +295,50 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             System.out.println(e);
         }
         return accessList;
+    }
+
+    public int AddUser (UUID SID, String username, String password,String AccessList) throws RemoteException {
+        int rowsAffected = 0;
+        if (checkSession(SID)==true) {
+            SHA256Hasher hasher = new SHA256Hasher();
+            byte[] byteSalt = hasher.getSalt();
+            String salt = hasher.byteToString(byteSalt);
+            String hashedPassword = hasher.HashSHA256(salt, password);
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "INSERT INTO Users (Username, Password, Salt, Access) VALUES (?,?,?,?)";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, username);
+                stmt.setString(2, hashedPassword);
+                stmt.setString(3, salt);
+                stmt.setString(4, AccessList);
+                stmt.execute();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        return rowsAffected;
+    }
+
+    public int RemoveUser(UUID SID, String username) throws RemoteException {
+        int rowsAffected = 0;
+        if (checkSession(SID)==true) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "DELETE FROM Users WHERE Username =?";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, username);
+                stmt.executeUpdate();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        return rowsAffected;
     }
 }

@@ -6,7 +6,7 @@ import java.rmi.registry.Registry;
 public class ApplicationServer {
 
     public static void main(String[] args) throws RemoteException {
-        Registry registery = LocateRegistry.createRegistry(5099);
+        Registry registery = LocateRegistry.createRegistry(6099);
         try {
             registery.rebind("printer", new PrintServant());
         } catch (Exception e){

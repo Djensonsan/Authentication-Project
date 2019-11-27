@@ -17,7 +17,7 @@ public class Client
         System.out.println("Password: ");
         String password = scanner.nextLine();
 
-        PrintService service = (PrintService) Naming.lookup("rmi://localhost:5099/printer");
+        PrintService service = (PrintService) Naming.lookup("rmi://localhost:6099/printer");
 
         UUID SID = service.initiateSession(username,password);
         if(SID != null){
@@ -25,6 +25,7 @@ public class Client
         } else {
             System.out.println("Login failed for user: "+username);
         }
+
         System.out.println(service.start(SID));
         System.out.println(service.print("Docs.txt", "A1",SID));
         System.out.println(service.print("File.txt", "A1",SID));
@@ -49,6 +50,13 @@ public class Client
         // Server start/stop
         System.out.println(service.start(SID));
         System.out.println(service.stop(SID));
+
+        // Organisational Changes
+        service.RemoveUser(SID,"Bob");
+        service.RemoveUser(SID,"George");
+        service.AddUser(SID,"George","KNdQT5w7","print,queue,start,stop,status,restart,setConfig,readConfig");
+        service.AddUser(SID,"Henry","UTdQB5w8","print,queue");
+        service.AddUser(SID,"Ida","BZdff5w9","print,restart,queue,topQueue");
 
         TimeUnit.SECONDS.sleep(15);
         service.print("Shouldnotaccept.txt", "A1",SID); //to test the timeout of the session
