@@ -321,7 +321,8 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return accessList;
     }
 
-    public void AddUser(String username, String password, String role, UUID SID) {
+    public int AddUser(String username, String password, String role, UUID SID) {
+        int rowsAffected = 0;
         if (checkSession(SID) == true) {
             SHA256Hasher hasher = new SHA256Hasher();
             byte[] byteSalt = hasher.getSalt();
@@ -336,15 +337,17 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 stmt.setString(2, hashedPassword);
                 stmt.setString(3, salt);
                 stmt.setString(4, role);
-                ResultSet rs = stmt.executeQuery();
+                rowsAffected = stmt.executeUpdate();
                 con.close();
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
+        return rowsAffected;
     }
 
-    public void AddRole(String role, String AccessList, UUID SID) {
+    public int AddRole(String role, String AccessList, UUID SID) {
+        int rowsAffected = 0;
         if (checkSession(SID) == true) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -353,15 +356,17 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setString(1, role);
                 stmt.setString(2, AccessList);
-                ResultSet rs = stmt.executeQuery();
+                rowsAffected = stmt.executeUpdate();
                 con.close();
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
+        return rowsAffected;
     }
 
-    public void UpdateUser (String username, String role, UUID SID) {
+    public int UpdateUser (String username, String role, UUID SID) {
+        int rowsAffected = 0;
         if (checkSession(SID) == true) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -370,15 +375,17 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setString(1, role);
                 stmt.setString(2, username);
-                ResultSet rs = stmt.executeQuery();
+                rowsAffected = stmt.executeUpdate();
                 con.close();
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
+        return rowsAffected;
     }
 
-    public void RemoveUser (String username, UUID SID) {
+    public int RemoveUser (String username, UUID SID) {
+        int rowsAffected = 0;
         if (checkSession(SID) == true) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -386,12 +393,13 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 String sql = "DELETE FROM Users WHERE username=?;";
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setString(1, username);
-                ResultSet rs = stmt.executeQuery();
+                rowsAffected = stmt.executeUpdate();
                 con.close();
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
+        return rowsAffected;
     }
 }
 

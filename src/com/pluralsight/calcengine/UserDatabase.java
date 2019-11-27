@@ -2,15 +2,22 @@ package com.pluralsight.calcengine;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class UserDatabase {
     // Username and password of the local mySQL instance admin.
     // Can be root for example.
     // Used access control of mySQL, Printer user only has SELECT privilege.
-    static String admin = "root";
-    static String adminPassword = "";
+    static String admin;
+    static String adminPassword;
 
     public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Username: ");
+        admin = scanner.nextLine();
+        System.out.println("Password: ");
+        adminPassword = scanner.nextLine();
+
         Boolean dropSuccess = dropPrinterAccount();
         int rows = AddPrinterAccount();
         AddGrantsPrinterAccount();
@@ -23,7 +30,6 @@ public class UserDatabase {
         AddUser("Erica","RnPRs958","DefaultUser");
         AddUser("Fred","W6S9NACb","DefaultUser");
         AddUser("George","KNdQT5w7","DefaultUser");
-        AddUser("John", "JnYhd8g4", "ServiceTechnician,DefaultUser");
         AddRole("ServerManager", "start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue,AddRole,AddUser,UpdateUser,RemoveUser");
         AddRole("ServiceTechnician", "start,stop,status,restart,setConfig,readConfig");
         AddRole("PowerUser", "print,topQueue,queue,topQueue");
@@ -75,8 +81,8 @@ public class UserDatabase {
         return rowsAffected;
     }
 
-
-    private static void AddUser(String username, String password, String role) {
+    private static int AddUser(String username, String password, String role) {
+        int rowsAffected = 0;
         SHA256Hasher hasher = new SHA256Hasher();
         byte [] byteSalt = hasher.getSalt();
         String salt = hasher.byteToString(byteSalt);
@@ -90,15 +96,16 @@ public class UserDatabase {
             stmt.setString(2, hashedPassword);
             stmt.setString(3, salt);
             stmt.setString(4, role);
-            ResultSet rs = stmt.executeQuery();
+            rowsAffected = stmt.executeUpdate();
             con.close();
         } catch (Exception e) {
             System.out.println(e);
         }
+        return rowsAffected;
     }
 
-
-    private static void AddRole(String role, String AccessList) {
+    private static int AddRole(String role, String AccessList) {
+        int rowsAffected = 0;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
@@ -106,15 +113,16 @@ public class UserDatabase {
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, role);
             stmt.setString(2, AccessList);
-            ResultSet rs = stmt.executeQuery();
+            rowsAffected = stmt.executeUpdate();
             con.close();
         } catch (Exception e) {
             System.out.println(e);
         }
+        return rowsAffected;
     }
 
-
-    private static void UpdateUser (String username, String role) {
+    private static int UpdateUser (String username, String role) {
+        int rowsAffected = 0;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
@@ -122,28 +130,29 @@ public class UserDatabase {
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, role);
             stmt.setString(2, username);
-            ResultSet rs = stmt.executeQuery();
+            rowsAffected = stmt.executeUpdate();
             con.close();
         } catch (Exception e) {
             System.out.println(e);
         }
+        return rowsAffected;
     }
 
-    private static void RemoveUser (String username) {
+    private static int RemoveUser (String username) {
+        int rowsAffected = 0;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             String sql = "DELETE FROM Users WHERE username=?;";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
+            rowsAffected= stmt.executeUpdate();
             con.close();
         } catch (Exception e) {
             System.out.println(e);
         }
+        return rowsAffected;
     }
-
-
 
     private static int ClearTable(String tablename) {
         int rowsAffected = 0;
