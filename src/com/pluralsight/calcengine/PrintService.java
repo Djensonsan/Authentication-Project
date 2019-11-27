@@ -20,8 +20,8 @@ public interface PrintService extends Remote {
     public int getUserId(String username, String password) throws RemoteException;
     public UUID initiateSession(String username, String password) throws RemoteException;
     public String getUserAccessControl(String username) throws RemoteException;
-    public int AddUser(String username, String password, String role, UUID SID);
-    public int AddRole(String role, String AccessList, UUID SID);
-    public int RemoveUser(String username, UUID SID);
-    public int UpdateUser(String username, String roles, UUID SID);
+    public int AddUser(String username, String password, String role, UUID SID)throws RemoteException;
+    public int AddRole(String role, String AccessList, UUID SID)throws RemoteException;
+    public int RemoveUser(String username, UUID SID)throws RemoteException;
+    public int UpdateUser(String username, String roles, UUID SID)throws RemoteException;
 }

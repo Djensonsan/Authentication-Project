@@ -50,8 +50,8 @@ public class Client
         System.out.println(service.start(SID));
         System.out.println(service.stop(SID));
 
-        TimeUnit.SECONDS.sleep(15);
-        service.print("Shouldnotaccept.txt", "A1",SID); //to test the timeout of the session
+        //TimeUnit.SECONDS.sleep(15);
+        //service.print("Shouldnotaccept.txt", "A1",SID); //to test the timeout of the session
 
         //Updates
         service.RemoveUser("Bob", SID);

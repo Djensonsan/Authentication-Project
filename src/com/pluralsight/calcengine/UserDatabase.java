@@ -73,7 +73,7 @@ public class UserDatabase {
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
             stmt = con.createStatement();
-            rowsAffected += stmt.executeUpdate("GRANT SELECT ON *.* TO 'Printer'@'localhost';");
+            rowsAffected += stmt.executeUpdate("GRANT ALL PRIVILEGES ON *.* TO 'Printer'@'localhost';");
             con.close();
         } catch (Exception e) {
             System.out.println(e);
