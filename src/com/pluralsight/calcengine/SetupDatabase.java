@@ -16,14 +16,20 @@ public class SetupDatabase {
         AddPrinterAccount();
         AddGrantsPrinterAccount();
         ClearTable("Users");
+        ClearTable("Roles");
 
-        AddUser("Alice","vMErcmgF","start,stop,print,status,restart,topQueue,setConfig,readConfig,queue,topQueue,AddUser,RemoveUser");
-        AddUser("Bob","zbY8MR6L","start,stop,status,restart,setConfig,readConfig");
-        AddUser("Cecilia","FRgBQ5sK","print,restart,queue,topQueue");
-        AddUser("David","FFcBr5Ej","print,queue");
-        AddUser("Erica","RnPRs958","print,queue");
-        AddUser("Fred","W6S9NACb","print,queue");
-        AddUser("George","KNdQT5w7","print,queue");
+        AddUser("Alice","vMErcmgF","ServerManager");
+        AddUser("Bob","zbY8MR6L","ServiceTechnician");
+        AddUser("Cecilia","FRgBQ5sK","PowerUser");
+        AddUser("David","FFcBr5Ej","DefaultUser");
+        AddUser("Erica","RnPRs958","DefaultUser");
+        AddUser("Fred","W6S9NACb","DefaultUser");
+        AddUser("George","KNdQT5w7","DefaultUser");
+
+        AddRole("ServerManager","start,stop,restart,status,readConfig,setConfig,print,queue,topQueue,AddUser,RemoveUser,UpdateUser,AddRole");
+        AddRole("ServiceTechnician","start,stop,restart,status,readConfig,setConfig");
+        AddRole("ServiceTechnician","restart,print,queue,topQueue");
+        AddRole("DefaultUser","print,queue");
     }
 
     private static Boolean dropPrinterAccount() {
@@ -69,7 +75,7 @@ public class SetupDatabase {
         return rowsAffected;
     }
 
-    private static int AddUser(String username, String password,String AccessList) {
+    private static int AddUser(String username, String password,String Role) {
         int rowsAffected = 0;
         SHA256Hasher hasher = new SHA256Hasher();
         byte [] byteSalt = hasher.getSalt();
@@ -81,7 +87,22 @@ public class SetupDatabase {
             Connection con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
             Statement stmt = con.createStatement();
-            rowsAffected = stmt.executeUpdate("INSERT INTO Users (Username, Password, Salt, Access) VALUES ('"+username+"','"+hashedPassword+"','"+salt+"','"+AccessList+"')");
+            rowsAffected = stmt.executeUpdate("INSERT INTO Users (Username, Password, Salt, Role) VALUES ('"+username+"','"+hashedPassword+"','"+salt+"','"+Role+"')");
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return rowsAffected;
+    }
+
+    private static int AddRole(String role, String access) {
+        int rowsAffected = 0;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", admin, adminPassword);
+            Statement stmt = con.createStatement();
+            rowsAffected = stmt.executeUpdate("INSERT INTO Roles (RoleId, Access) VALUES ('"+role+"','"+access+"')");
             con.close();
         } catch (Exception e) {
             System.out.println(e);

@@ -284,7 +284,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-            String sql = "SELECT role FROM users WHERE Username=?;";
+            String sql = "SELECT Role FROM Users WHERE Username=?;";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -301,7 +301,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-            String sql = "SELECT access FROM roles WHERE idroles=?";
+            String sql = "SELECT Access FROM Roles WHERE RoleId=?";
             for (int i =1; i<rolesList.length; i++){
                 sql = sql+" OR idroles=?";
             }
@@ -352,7 +352,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-                String sql = "INSERT INTO Roles (idroles, access) VALUES (?,?);";
+                String sql = "INSERT INTO Roles (RoleId, Access) VALUES (?,?);";
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setString(1, role);
                 stmt.setString(2, AccessList);
@@ -365,13 +365,13 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return rowsAffected;
     }
 
-    public int UpdateUser (UUID SID, String username, String role) throws RemoteException {
+    public int UpdateUser (UUID SID, String username, String role) {
         int rowsAffected = 0;
         if (checkSession(SID) == true) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-                String sql = "UPDATE Users SET role=? WHERE username=?;";
+                String sql = "UPDATE Users SET Role=? WHERE Username=?;";
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setString(1, role);
                 stmt.setString(2, username);
@@ -390,7 +390,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-                String sql = "DELETE FROM Users WHERE username=?;";
+                String sql = "DELETE FROM Users WHERE Username=?;";
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setString(1, username);
                 rowsAffected = stmt.executeUpdate();
