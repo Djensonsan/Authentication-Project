@@ -1,3 +1,4 @@
+import com.pluralsight.calcengine.SetupDatabase;
 import com.pluralsight.calcengine.PrintService;
 import org.junit.Test;
 
@@ -6,7 +7,6 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -14,9 +14,18 @@ import static junit.framework.Assert.*;
 
 
 public class Tests {
-    PrintService service = (PrintService) Naming.lookup("rmi://localhost:8099/printer");
+    PrintService service = (PrintService) Naming.lookup("rmi://localhost:6099/printer");
 
+    // Setup the initial state for the tests.
     public Tests() throws RemoteException, NotBoundException, MalformedURLException {
+        String username = "Alice";
+        String password = "vMErcmgF";
+        UUID SID = service.initiateSession(username,password);
+        // Original organisational structure:
+        SetupDatabase setup = new SetupDatabase();
+        // ENTER NAME AND PASSWORD OF DATABASE ADMIN
+        // Needed to setup initial state of database. (Add Alice atleast.)
+        setup.setupDatabase("root","10jl0298");
     }
 
     @Test
@@ -146,24 +155,6 @@ public class Tests {
         assertEquals(dummy,"Invalid operation: Index out of bounds");
     }
 
-    @Test
-    public void testDeleteTable() {
-        Exception dummy = new Exception();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
-            String sql = "TRUNCATE Users";
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.execute();
-            con.close();
-        } catch (Exception e) {
-            dummy = e;
-        }
-        assertEquals(dummy.getMessage(),"DROP command denied to user 'Printer'@'localhost' for table 'users'");
-    }
-
-
-    // Alice should be able to call all functions.
     // Alice should be able to call all functions.
     @Test
     public void testAccessControlAlice() throws IOException, InterruptedException {
@@ -253,5 +244,78 @@ public class Tests {
         service.setConfig("colours","Black",SID);
         dummy = service.readConfig("colours",SID);
         assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+    }
+
+    // Will test the organisational changes i.e. remove Bob, Update George and add Henry and Ida.
+    @Test
+    public void testOrganisationalChanges() throws  IOException, InterruptedException {
+        // Alice has permission to add/remove users:
+        String username = "Alice";
+        String password = "vMErcmgF";
+        UUID SID = service.initiateSession(username,password);
+        service.RemoveUser(SID,"Bob");
+        service.RemoveUser(SID,"George");
+        service.AddUser(SID,"George","KNdQT5w7","print,queue,start,stop,status,restart,setConfig,readConfig");
+        service.AddUser(SID,"Henry","UTdQB5w8","print,queue");
+        service.AddUser(SID,"Ida","BZdff5w9","print,restart,queue,topQueue");
+
+        // Bob is fired from the company:
+        username = "Bob";
+        password = "zbY8MR6L";
+        SID = service.initiateSession(username,password);
+        String dummy = service.start(SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        dummy = service.status(SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+
+        // George takes over Bob's functions:
+        username = "George";
+        password = "KNdQT5w7";
+        SID = service.initiateSession(username,password);
+        // Test Print & Queue
+        dummy = service.print("Docs.txt", "A1",SID);
+        dummy = service.queue(SID);
+        assertEquals(dummy,"0 Docs.txt\n");
+        // Test Start & Stop
+        dummy = service.stop(SID);
+        assertEquals(dummy,"From server: Print server turning off");
+        dummy = service.start(SID);
+        assertEquals(dummy,"From server: Print server turning on");
+        // Test Topqueue, Status and Restart
+        dummy = service.topQueue(1,SID);
+        assertEquals(dummy,"Session expired, invalid SID or access denied to function.");
+        dummy = service.status(SID);
+        assertEquals(dummy,"From server: Print server ON\nQueue: 1 print requests");
+        dummy = service.restart(SID);
+        // Test setConfig and readConfig
+        assertEquals(dummy,"From server: Print server restarting");
+        service.setConfig("colours","Black",SID);
+        dummy = service.readConfig("colours",SID);
+        assertEquals(dummy,"Black");
+
+        // Henry joins the company:
+        username = "Henry";
+        password = "UTdQB5w8";
+        // Test print and queue
+        SID = service.initiateSession(username,password);
+        service.print("Docs.txt", "A1",SID);
+        dummy = service.queue(SID);
+        assertEquals(dummy,"0 Docs.txt\n");
+
+        // Ida joins the company:
+        username = "Ida";
+        password = "BZdff5w9";
+        SID = service.initiateSession(username,password);
+        // Test print and queue
+        service.print("Docs.txt", "A1",SID);
+        dummy = service.queue(SID);
+        assertEquals(dummy,"0 Docs.txt\n1 Docs.txt\n");
+        // Test topQueue
+        service.print("File.txt", "A1",SID);
+        dummy = service.topQueue(1,SID);
+        assertEquals(dummy,"From server: Moved job to head of queue: 1");
+        // Test restart
+        dummy = service.restart(SID);
+        assertEquals(dummy,"From server: Print server restarting");
     }
 }
