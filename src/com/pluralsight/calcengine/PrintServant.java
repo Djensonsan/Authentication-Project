@@ -215,7 +215,8 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
-                if(accessList.contains(methodName)){
+                String [] accessListValues = accessList.split(",");
+                if(Arrays.asList(accessListValues).contains(methodName)){
                     sessionsValid = true;
                     logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
                 }
@@ -297,13 +298,12 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         }
         //transform rolesList
         String[] rolesList = roles.split(",");
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
             String sql = "SELECT Access FROM Roles WHERE RoleId=?";
             for (int i =1; i<rolesList.length; i++){
-                sql = sql+" OR idroles=?";
+                sql = sql+" OR RoleId=?";
             }
             sql = sql + ";";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -312,7 +312,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             }
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                accessList = accessList + rs.getString("Access");
+                accessList = accessList +","+ rs.getString("Access");
             }
             con.close();
         } catch (Exception e) {

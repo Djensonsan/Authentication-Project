@@ -255,9 +255,9 @@ public class Tests {
         UUID SID = service.initiateSession(username,password);
         service.RemoveUser(SID,"Bob");
         service.RemoveUser(SID,"George");
-        service.AddUser(SID,"George","KNdQT5w7","print,queue,start,stop,status,restart,setConfig,readConfig");
-        service.AddUser(SID,"Henry","UTdQB5w8","print,queue");
-        service.AddUser(SID,"Ida","BZdff5w9","print,restart,queue,topQueue");
+        service.AddUser(SID,"George","KNdQT5w7","ServiceTechnician,DefaultUser");
+        service.AddUser(SID,"Henry","UTdQB5w8","DefaultUser");
+        service.AddUser(SID,"Ida","BZdff5w9","PowerUser");
 
         // Bob is fired from the company:
         username = "Bob";
