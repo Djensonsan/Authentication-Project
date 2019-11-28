@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class UserDatabase {
+public class SetupDatabase {
     // Username and password of the local mySQL instance admin.
     // Can be root for example.
     // Used access control of mySQL, Printer user only has SELECT privilege.
