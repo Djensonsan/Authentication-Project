@@ -321,7 +321,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return accessList;
     }
 
-    public int AddUser(String username, String password, String role, UUID SID) throws RemoteException{
+    public int AddUser(UUID SID, String username, String password, String role) throws RemoteException{
         int rowsAffected = 0;
         if (checkSession(SID) == true) {
             SHA256Hasher hasher = new SHA256Hasher();
@@ -346,7 +346,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return rowsAffected;
     }
 
-    public int AddRole(String role, String AccessList, UUID SID) throws RemoteException {
+    public int AddRole(UUID SID, String role, String AccessList) throws RemoteException {
         int rowsAffected = 0;
         if (checkSession(SID) == true) {
             try {
@@ -365,7 +365,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return rowsAffected;
     }
 
-    public int UpdateUser (String username, String role, UUID SID) throws RemoteException {
+    public int UpdateUser (UUID SID, String username, String role) throws RemoteException {
         int rowsAffected = 0;
         if (checkSession(SID) == true) {
             try {
@@ -384,7 +384,7 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
         return rowsAffected;
     }
 
-    public int RemoveUser (String username, UUID SID) throws RemoteException {
+    public int RemoveUser (UUID SID, String username) throws RemoteException {
         int rowsAffected = 0;
         if (checkSession(SID) == true) {
             try {

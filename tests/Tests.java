@@ -14,7 +14,7 @@ import static junit.framework.Assert.*;
 
 
 public class Tests {
-    PrintService service = (PrintService) Naming.lookup("rmi://localhost:6099/printer");
+    PrintService service = (PrintService) Naming.lookup("rmi://localhost:8099/printer");
 
     // Setup the initial state for the tests.
     public Tests() throws RemoteException, NotBoundException, MalformedURLException {

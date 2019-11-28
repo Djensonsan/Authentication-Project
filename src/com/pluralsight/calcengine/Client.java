@@ -54,10 +54,10 @@ public class Client
         //service.print("Shouldnotaccept.txt", "A1",SID); //to test the timeout of the session
 
         //Updates
-        service.RemoveUser("Bob", SID);
-        service.UpdateUser("George", "ServiceTechnician", SID);
-        service.AddUser("Henry", "JkdfJEoI", "DefaultUser", SID);
-        service.AddUser("Ida", "njHxUfeL", "PowerUser", SID) ;
+        service.RemoveUser(SID, "Bob");
+        service.UpdateUser(SID, "George", "ServiceTechnician");
+        service.AddUser(SID,"Henry", "JkdfJEoI", "DefaultUser");
+        service.AddUser(SID,"Ida", "njHxUfeL", "PowerUser") ;
     }
 }
 
