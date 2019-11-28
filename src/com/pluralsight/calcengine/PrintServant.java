@@ -215,15 +215,15 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
                 StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
                 StackTraceElement e = stacktrace[2];
                 String methodName = e.getMethodName();
-                String [] accessListValues = accessList.split(",");
-                if(Arrays.asList(accessListValues).contains(methodName)){
+                if(accessList.contains(methodName)){
                     sessionsValid = true;
-                    logger.info("Method invoked: " + methodName + " By: " + client.getUsername());
+                    logger.info("Method invoked: "+methodName+" By: "+client.getUsername());
                 }
             }
         }
         return sessionsValid;
     }
+
 
 
     @Override
@@ -312,16 +312,94 @@ public class PrintServant extends UnicastRemoteObject implements PrintService {
             }
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                accessList = accessList+','+rs.getString("Access");
+                accessList = accessList + rs.getString("Access");
             }
             con.close();
         } catch (Exception e) {
             System.out.println(e);
         }
-        System.out.println(accessList);
         return accessList;
     }
 
+    public int AddUser(String username, String password, String role, UUID SID) throws RemoteException{
+        int rowsAffected = 0;
+        if (checkSession(SID) == true) {
+            SHA256Hasher hasher = new SHA256Hasher();
+            byte[] byteSalt = hasher.getSalt();
+            String salt = hasher.byteToString(byteSalt);
+            String hashedPassword = hasher.HashSHA256(salt, password);
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "INSERT INTO Users (Username, Password, Salt, Role) VALUES (?,?,?,?);";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, username);
+                stmt.setString(2, hashedPassword);
+                stmt.setString(3, salt);
+                stmt.setString(4, role);
+                rowsAffected = stmt.executeUpdate();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        return rowsAffected;
+    }
 
+    public int AddRole(String role, String AccessList, UUID SID) throws RemoteException {
+        int rowsAffected = 0;
+        if (checkSession(SID) == true) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "INSERT INTO Roles (idroles, access) VALUES (?,?);";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, role);
+                stmt.setString(2, AccessList);
+                rowsAffected = stmt.executeUpdate();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        return rowsAffected;
+    }
+
+    public int UpdateUser (String username, String role, UUID SID) throws RemoteException {
+        int rowsAffected = 0;
+        if (checkSession(SID) == true) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "UPDATE Users SET role=? WHERE username=?;";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, role);
+                stmt.setString(2, username);
+                rowsAffected = stmt.executeUpdate();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        return rowsAffected;
+    }
+
+    public int RemoveUser (String username, UUID SID) throws RemoteException {
+        int rowsAffected = 0;
+        if (checkSession(SID) == true) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/PWD?serverTimezone=UTC", "Printer", "password");
+                String sql = "DELETE FROM Users WHERE username=?;";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, username);
+                rowsAffected = stmt.executeUpdate();
+                con.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        return rowsAffected;
+    }
 }
 

@@ -1,10 +1,14 @@
 package com.pluralsight.calcengine;
 
+
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Formatter;
+
+
 public class SHA256Hasher {
 
     public static String HashSHA256(String salt, String password)
