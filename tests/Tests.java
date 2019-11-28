@@ -1,5 +1,5 @@
-import com.pluralsight.calcengine.PrintService;
 import com.pluralsight.calcengine.SetupDatabase;
+import com.pluralsight.calcengine.PrintService;
 import org.junit.Test;
 
 import java.io.IOException;
