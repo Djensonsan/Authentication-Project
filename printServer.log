@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2019-11-28T13:30:50.481690Z</date>
+  <millis>1574947850481</millis>
+  <nanos>690000</nanos>
+  <sequence>63</sequence>
+  <logger>com.pluralsight.calcengine.PrintServant</logger>
+  <level>INFO</level>
+  <class>com.pluralsight.calcengine.PrintServant</class>
+  <method>checkSession</method>
+  <thread>22</thread>
+  <message>Method invoked: restart By: Ida</message>
+</record>
