@@ -2,218 +2,50 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2019-11-28T16:07:58.139667Z</date>
-  <millis>1574957278139</millis>
-  <nanos>667000</nanos>
+  <date>2019-11-28T18:38:48.303073Z</date>
+  <millis>1574966328303</millis>
+  <nanos>73000</nanos>
   <sequence>108</sequence>
   <logger>com.pluralsight.calcengine.PrintServant</logger>
   <level>INFO</level>
   <class>com.pluralsight.calcengine.PrintServant</class>
   <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: AddUser By: Alice</message>
+  <thread>20</thread>
+  <message>Method invoked: start By: Alice</message>
 </record>
 <record>
-  <date>2019-11-28T16:07:58.157980Z</date>
-  <millis>1574957278157</millis>
-  <nanos>980000</nanos>
+  <date>2019-11-28T18:38:48.642162Z</date>
+  <millis>1574966328642</millis>
+  <nanos>162000</nanos>
   <sequence>109</sequence>
   <logger>com.pluralsight.calcengine.PrintServant</logger>
   <level>INFO</level>
   <class>com.pluralsight.calcengine.PrintServant</class>
   <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: AddUser By: Alice</message>
+  <thread>20</thread>
+  <message>Method invoked: start By: Alice</message>
 </record>
 <record>
-  <date>2019-11-28T16:07:58.174226Z</date>
-  <millis>1574957278174</millis>
-  <nanos>226000</nanos>
+  <date>2019-11-28T18:38:48.643443Z</date>
+  <millis>1574966328643</millis>
+  <nanos>443000</nanos>
   <sequence>110</sequence>
   <logger>com.pluralsight.calcengine.PrintServant</logger>
   <level>INFO</level>
   <class>com.pluralsight.calcengine.PrintServant</class>
   <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: AddUser By: Alice</message>
+  <thread>20</thread>
+  <message>Method invoked: stop By: Alice</message>
 </record>
 <record>
-  <date>2019-11-28T16:07:58.270561Z</date>
-  <millis>1574957278270</millis>
-  <nanos>561000</nanos>
+  <date>2019-11-28T18:38:48.644306Z</date>
+  <millis>1574966328644</millis>
+  <nanos>306000</nanos>
   <sequence>111</sequence>
   <logger>com.pluralsight.calcengine.PrintServant</logger>
   <level>INFO</level>
   <class>com.pluralsight.calcengine.PrintServant</class>
   <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: print By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.271345Z</date>
-  <millis>1574957278271</millis>
-  <nanos>345000</nanos>
-  <sequence>112</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: queue By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.271988Z</date>
-  <millis>1574957278271</millis>
-  <nanos>988000</nanos>
-  <sequence>113</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: stop By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.272584Z</date>
-  <millis>1574957278272</millis>
-  <nanos>584000</nanos>
-  <sequence>114</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: start By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.273719Z</date>
-  <millis>1574957278273</millis>
-  <nanos>719000</nanos>
-  <sequence>115</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: status By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.274561Z</date>
-  <millis>1574957278274</millis>
-  <nanos>561000</nanos>
-  <sequence>116</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: restart By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.275501Z</date>
-  <millis>1574957278275</millis>
-  <nanos>501000</nanos>
-  <sequence>117</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: setConfig By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.276210Z</date>
-  <millis>1574957278276</millis>
-  <nanos>210000</nanos>
-  <sequence>118</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: readConfig By: George</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.326058Z</date>
-  <millis>1574957278326</millis>
-  <nanos>58000</nanos>
-  <sequence>119</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: print By: Henry</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.326765Z</date>
-  <millis>1574957278326</millis>
-  <nanos>765000</nanos>
-  <sequence>120</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: queue By: Henry</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.375767Z</date>
-  <millis>1574957278375</millis>
-  <nanos>767000</nanos>
-  <sequence>121</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: print By: Ida</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.376553Z</date>
-  <millis>1574957278376</millis>
-  <nanos>553000</nanos>
-  <sequence>122</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: queue By: Ida</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.377299Z</date>
-  <millis>1574957278377</millis>
-  <nanos>299000</nanos>
-  <sequence>123</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: print By: Ida</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.377838Z</date>
-  <millis>1574957278377</millis>
-  <nanos>838000</nanos>
-  <sequence>124</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: topQueue By: Ida</message>
-</record>
-<record>
-  <date>2019-11-28T16:07:58.378471Z</date>
-  <millis>1574957278378</millis>
-  <nanos>471000</nanos>
-  <sequence>125</sequence>
-  <logger>com.pluralsight.calcengine.PrintServant</logger>
-  <level>INFO</level>
-  <class>com.pluralsight.calcengine.PrintServant</class>
-  <method>checkSession</method>
-  <thread>25</thread>
-  <message>Method invoked: restart By: Ida</message>
+  <thread>20</thread>
+  <message>Method invoked: stop By: Alice</message>
 </record>

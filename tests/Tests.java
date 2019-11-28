@@ -254,8 +254,7 @@ public class Tests {
         String password = "vMErcmgF";
         UUID SID = service.initiateSession(username,password);
         service.RemoveUser(SID,"Bob");
-        service.RemoveUser(SID,"George");
-        service.AddUser(SID,"George","KNdQT5w7","ServiceTechnician,DefaultUser");
+        service.UpdateUser(SID,"George","ServiceTechnician,DefaultUser");
         service.AddUser(SID,"Henry","UTdQB5w8","DefaultUser");
         service.AddUser(SID,"Ida","BZdff5w9","PowerUser");
 
