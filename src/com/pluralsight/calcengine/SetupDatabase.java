@@ -28,7 +28,7 @@ public class SetupDatabase {
 
         AddRole("ServerManager","start,stop,restart,status,readConfig,setConfig,print,queue,topQueue,AddUser,RemoveUser,UpdateUser,AddRole");
         AddRole("ServiceTechnician","start,stop,restart,status,readConfig,setConfig");
-        AddRole("ServiceTechnician","restart,print,queue,topQueue");
+        AddRole("PowerUser","restart,print,queue,topQueue");
         AddRole("DefaultUser","print,queue");
     }
 

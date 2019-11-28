@@ -18,9 +18,9 @@ public class Tests {
 
     // Setup the initial state for the tests.
     public Tests() throws RemoteException, NotBoundException, MalformedURLException {
-        String username = "Alice";
-        String password = "vMErcmgF";
-        UUID SID = service.initiateSession(username,password);
+//        String username = "Alice";
+//        String password = "vMErcmgF";
+//        UUID SID = service.initiateSession(username,password);
         // Original organisational structure:
         SetupDatabase setup = new SetupDatabase();
         // ENTER NAME AND PASSWORD OF DATABASE ADMIN
