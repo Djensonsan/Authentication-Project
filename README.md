@@ -2,19 +2,22 @@
 This project was part of the course "Data Security" taught at DTU (Technical University of Denmark), Copenhagen.
 The goal was to: "give students an introduction to fundamental concepts in computer security and introduce central theories and techniques for the development and analysis of secure IT systems".
 
+The following description comes from the official course description: http://www2.compute.dtu.dk/courses/02239/AuthenticationLab.html.
+
+# Description
 ## Lab Work
 
 The first task is to write a simple client/server application using RMI. The example used in this lab is a mock-up of a simple authenticated print server, such as a print server installed in a small company. 
 The print server must support the following operations:
-print(String filename, String printer);   // prints file filename on the specified printer
-queue(String printer);   // lists the print queue for a given printer on the user's display in lines of the form <job number>   <file name>
-topQueue(String printer, int job);   // moves job to the top of the queue
-start();   // starts the print server
-stop();   // stops the print server
-restart();   // stops the print server, clears the print queue and starts the print server again
-status(String printer);  // prints status of printer on the user's display
-readConfig(String parameter);   // prints the value of the parameter on the user's display
-setConfig(String parameter, String value);   // sets the parameter to value
+- print(String filename, String printer);   // prints file filename on the specified printer
+- queue(String printer);   // lists the print queue for a given printer on the user's display in lines of the form <job number>   <file name>
+- topQueue(String printer, int job);   // moves job to the top of the queue
+- start();   // starts the print server
+- stop();   // stops the print server
+- restart();   // stops the print server, clears the print queue and starts the print server again
+- status(String printer);  // prints status of printer on the user's display
+- readConfig(String parameter);   // prints the value of the parameter on the user's display
+- setConfig(String parameter, String value);   // sets the parameter to value
 These operations define the interface of the print server, but it is unnecessary to implement any printing capabilities for this lab, i.e. it is sufficient that the print server records the invocation of a particular operation in a logfile or prints it on the console. It must be possible to invoke all the print server operations defined in the interface from the client program.
 This lab will design and implement a password based authentication mechanism for the print server, i.e. the print server must authenticate all requests from the client. For the purpose of this lab, it is not necessary to consider enrolment of users, i.e. authentication data structures can be populated by hand. The design and implementation of the print server must, however, consider the problems of password storage, password transport and password verification.
   
