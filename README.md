@@ -4,4 +4,4 @@ The goal was to: "give students an introduction to fundamental concepts in compu
 
 See the Authentication_Lab.pdf file for more information about this project.
 
-The project description can be found: http://www2.compute.dtu.dk/courses/02239/AuthenticationLab.html.
+The project description can be found here: http://www2.compute.dtu.dk/courses/02239/AuthenticationLab.html.
