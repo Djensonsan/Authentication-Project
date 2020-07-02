@@ -18,6 +18,7 @@ The print server must support the following operations:
 - status(String printer);  // prints status of printer on the user's display
 - readConfig(String parameter);   // prints the value of the parameter on the user's display
 - setConfig(String parameter, String value);   // sets the parameter to value
+
 These operations define the interface of the print server, but it is unnecessary to implement any printing capabilities for this lab, i.e. it is sufficient that the print server records the invocation of a particular operation in a logfile or prints it on the console. It must be possible to invoke all the print server operations defined in the interface from the client program.
 This lab will design and implement a password based authentication mechanism for the print server, i.e. the print server must authenticate all requests from the client. For the purpose of this lab, it is not necessary to consider enrolment of users, i.e. authentication data structures can be populated by hand. The design and implementation of the print server must, however, consider the problems of password storage, password transport and password verification.
   
